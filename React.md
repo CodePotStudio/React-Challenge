@@ -76,4 +76,4 @@ const callbackFunction = useCallback(()=>{
 ```typescript
 const memoizedValue = useMemo(() => computeValue(a,b), 
 [a,b]); //없는 경우 렌더링 마다 새 값을 계산
-```d
+```
