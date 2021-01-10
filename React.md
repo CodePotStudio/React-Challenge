@@ -1,4 +1,20 @@
 # React
+## 설정
+### 절대경로로 Import
+```json
+tsconfig.json 파일에
+{
+    "compilerOptions": {
+        ...,
+        "baseUrl": "./src" 추가
+    }
+}
+```
+```typescript
+import Component from "../components/Component"; //대신
+import Component from "components/Component"; //로 import 가능
+```
+
 ## Hooks
 - React state와 lifecycle을 연동할 수 있게 해주는 함수
 - class 안에서는 동작하지 않음
@@ -40,6 +56,9 @@ useEffect(()=>{
     document.title = "You Clicked";
 }, []); //최초 1회만 effect 실행
 ```
+#### useLayoutEffect
+- useEffect와 동일하나, `DOM 변경 후에 동기적으로 발생`
+- DOM에서 Layout을 읽고 동기적으로 Re-rendering하는 경우 사용
 
 ### useCallback --- todo: callback 함수 알아보기
 - Memoization된 Callback 반환
@@ -53,8 +72,8 @@ const callbackFunction = useCallback(()=>{
 ### useMemo
 - memoization된 값을 반환
 - create 함수와 의존성 값 배열 전달시 의존성이 변경되었을 때에 memoization 값 다시 계산
+- 이를 통해 전달된 함수는 `렌더링 중에 실행`된다.
 ```typescript
-const memoizedValue = useMemo(() => computeValue(a,b), [a,b]);
+const memoizedValue = useMemo(() => computeValue(a,b), 
+[a,b]); //없는 경우 렌더링 마다 새 값을 계산
 ```
-### useHistory
-jandi tests
