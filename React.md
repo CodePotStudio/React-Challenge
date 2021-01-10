@@ -1,5 +1,5 @@
 # React
-## 설정
+## 설정(test)
 ### 절대경로로 Import
 ```json
 tsconfig.json 파일에
