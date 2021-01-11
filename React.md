@@ -77,3 +77,28 @@ const callbackFunction = useCallback(()=>{
 const memoizedValue = useMemo(() => computeValue(a,b), 
 [a,b]); //없는 경우 렌더링 마다 새 값을 계산
 ```
+//TODO Hook 좀 더 조사하고싶다 react-router-dom library 위주
+
+## List & Key
+### Key
+- List로 삽입된 Component에서 key는 React가 어떤 항목을 변경, 추가, 제거할 지 식별하는 것을 도움
+- Element의 안정적 고유성을 부여하기 위해 습관적으로 삽입해야 함
+- 대부분의 경우 Data의 ID(문자열)를 key로 사용한다.
+- 항목의 순서가 바뀔 수 있는 경우(sort(?)) key에 Index를 사용하면 안됨! -> 성능 저하를 야기할 수 있음
+- 명시적으로 key를 지정하지 않으면 `default Key = index`
+- Key는 배열 안에서 `형제 사이에 고유`해야 하며, `전체 범위에서 고유할 필요는 없다.`
+
+## React.memo
+- UI 성능 증가를 위해 React.memo()를 통해 렌더링 결과를 memoization
+- 이를 통해 불필요한 Re-rendering을 건너뛸 수 있다.
+- Functional Component가 같은 props로 자주 렌더링될 것이라 예상될 때 사용한다.
+- 성능 관련 변경이 잘못 적용된다면, 성능이 오히려 악화될 수 있다.
+- 얕은 비교를 하므로 비교 방식을 수정하고 싶다면 아래와 같이
+```typescript
+React.memo(Component, [areEqual(prevProps, nextProps)]);
+```
+### 동작
+1. React.memo()로 Component가 Wrapping되면 렌더링 후 결과를 `Memoizing`
+1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재아용
+### 사용하지 말아야할 때
+- 쓸모없는 props 비교 -> 대부분 false를 반환하는 비교 함수
