@@ -2,7 +2,11 @@
 - 내장형 XML같은 구문
 - TS에서는 embedding, type check, js로의 직접 컴파일을 지원
 - 파일 이름을 .tsx로 지정, jsx 옵션을 활성화해야 사용 가능
-
+## /** @jsx jsx */
+- jsx transformer라고 알리는 custom pragma
+- @emotion/core의 css prop를 활성화하기 위한 boiler plate
+- babel 설정으로 이를 제거할 수 있지만, CRA(Create-React-App)에서는 babel 커스텀 설정을 막아둠
+- react-app-rewired를 사용해야 설정 변경 가능(@emotion/babel-preset-css-prop 설치)
 ## JSX Mode
 - Typescript는 3가지 JSX모드와 함께 제공
 - 이 모드들은 방출 단계에서만 영향을 미치며, 타입 검사에는 영향을 받지 않는다.
