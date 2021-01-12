@@ -15,7 +15,7 @@
 
 > 이전에 배운건 잊어버리세요.
 
-## 모든 렌더링은 고유의 Prop과 State가 있다.
+## Each Render Has Its Own Props and State
 
 ```javascript
 function Counter() {
