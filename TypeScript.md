@@ -152,3 +152,7 @@ let user = new Student("Jane", "M.", "User");
 
 document.body.textContent = greeter(user);
 ```
+
+## Callback Function
+- 어떤 Event가 발생한 후 수행될 함수
+- js에서 function은 `1급 객체`이기 때문에 사용이 가능하다.

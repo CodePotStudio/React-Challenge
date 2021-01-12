@@ -104,4 +104,5 @@ React.memo(Component, [areEqual(prevProps, nextProps)]);
 ### React.memo with callback function
 - Function Object는 일반 Object와 동일한 비교 원칙을 따른다. (= 자기 자신에게만 동일하다.)
 - Parent Component가 Child Component의 Callback Function을 정의한다면 새 Function이 생성될 수 있음 -> Memoization이 될까?
-
+- re-render될 때 다른 instance를 넘기게 된다면 memoization이 발생하지 않을 것이다.
+- useCallback()을 사용해서 Callback Instance를 보존할 수 있다.
