@@ -33,21 +33,23 @@ function Counter() {
 이 컴포넌트가 어떻게 화면에 그려질지 예측이 되시나요? 여기서 `count`는 시간이 지남에 따라 값이 변하는 존재가 아닙니다. `setCount`로 다시 __렌더링 될 때 마다__ 새로운 함수가 생겨나고 `count`는 그 안에 상수로써 존재합니다.
 
 ```javascript
-// 처음 랜더링 시
+// 1. 처음 랜더링 시
 function Counter() {
   const count = 0; // useState() 로부터 리턴
   // ...
   <p>You clicked {count} times</p>
   // ...
 }
-// 버튼을 클릭하면 함수가 다시 호출된다
+
+// 2. 버튼을 클릭하면 함수가 다시 호출된다
 function Counter() {
   const count = 1; // useState() 로부터 리턴
   // ...
   <p>You clicked {count} times</p>
   // ...
 }
-// 또 한번 클릭하면, 다시 함수가 호출된다
+
+// 3. 또 한번 클릭하면, 다시 함수가 호출된다
 function Counter() {
   const count = 2; // useState() 로부터 리턴
   // ...
@@ -58,6 +60,85 @@ function Counter() {
 우리 눈에 보이는 `Counter`컴포넌트는, 매번 __새로운 함수의 결과를__ 화면에 반영한 것 입니다. 여기에는 `watcher`, `proxy`, `data binding` 같은 어떤 특별한 magic도 __없습니다.__
 
 각 3개의 함수마다 고유의 `count`값을 갖고 있고, React가 이를 DOM에 반영할 뿐입니다.
+
+## Each Render Has Its Own Event Handlers
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleAlertClick() {
+    setTimeout(() => {
+      alert('You clicked on: ' + count);
+    }, 3000);
+  }
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+
+      {/* NEW */}
+      <button onClick={handleAlertClick}>
+        Show alert
+      </button>
+    </div>
+  );
+}
+```
+1. 카운터를 3 증가시킨다
+2. "Show alert"를 누른다
+3. 타임아웃이 실행되기 전에 카운터를 5로 증가시킨다.
+
+![](https://overreacted.io/46c55d5f1f749462b7a173f1e748e41e/counter.gif)
+
+~~답: 3~~
+
+> 클래스 컴포넌트였다면 5가 나올수도 있다. (물론 3이 나오게할 방법이 있기 때문에 가능성으로 표현)
+
+매 랜더링 시, 그 내부 props와 state는 영원히 같은 상태로 유지됩니다.
+
+## Each Render Has Its Own Effects
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    document.title = `You clicked ${count} times`;
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+`useEffect`로 감싸진 함수도 이전 예제들과 마찬가지로, 매 렌더링마다 새로 호출되는 함수입니다. 다만 순서가 있습니다. return된 JSX가 DOM에 반영된 뒤(화면이 다 그려진 뒤) 호출됩니다.
+
+그리고 그 내부적으로 사용하는 `count`또한 렌더링 당시의 `count`와 묶여 있습니다.
+
+사실 지금까지 함수형 컴포넌트의 원리는 클로져와 완전히 동일합니다.
+
+```javascript
+for (var i = 0; i < 4; i++) {
+    setTimeout(() => console.log(i), 1000);
+}
+// 예상해보기
+
+for (var i = 0; i < 4; i++) {
+    ((i) => setTimeout(() => console.log(i), 1000))(i);
+}
+```
+
+## 흐름을 거슬러 올라가기
+
 
 ---
 https://rinae.dev/posts/a-complete-guide-to-useeffect-ko
