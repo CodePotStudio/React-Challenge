@@ -105,6 +105,10 @@ this.setState(current => ({count: current.count + 1}));
 * onClick은 따로 구현할 필요없이 이미 button안에 있는 props라고 한다.
 * this.add()라고 쓰면 바로 실행까지 하는거고, 저렇게 괄호없이 쓰면 this.add는 앞으로 버튼을 누를 때마다 실행할 함수를 '저장'만 하는 정도인 것 같다. 
 
+## Class component
+* State가 등장하긴 전까지는 예시를 들 때 function App() 이렇게 썼었는데, state가 등장하고 나서부터 강의에 class App() 이라고 쓰기 시작했다. class 컴포넌트는 함수 컴포넌트보다 몇 가지 기능이 더 있는데, 그 중 하나가 render라서 이걸 사용할 수가 있고, 그리고 클래스에 로컬 state를 추가해서 사용할 수 있기 때문에 그런 모양이다.
+* 이 부분에 대해서는 리액트 문서 https://ko.reactjs.org/docs/state-and-lifecycle.html 를 읽었는데, 여기에서도 직접 state 수정하지 말고 setState를 사용하라고 써 있었다. 
+
 ## Life cycle of a component
 ```
 class App extends React.Component{
