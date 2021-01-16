@@ -99,6 +99,19 @@ React.memo(Component, [areEqual(prevProps, nextProps)]);
 ### 동작
 1. React.memo()로 Component가 Wrapping되면 렌더링 후 결과를 `Memoizing`
 1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재아용
+
+## React.FC
+- props의 Type을 Generic으로 넣어서 사용한다.
+### 장점
+- props에 기본적으로 children이 들어간다.
+- defaultProps, propsType, contextTypes를 설정할 때 자동완성이 될 수 있다.
+### 단점
+- children이 Optional 형태로 들어가서 props의 Type이 명백하지 않다.(children의 유무)
+- 어떤 Component는 Children이 필수, 어떤 Component는 반드시 없어야 할 수 있다.
+- defaultProps가 제대로 작동하지 않는다. => 이게 좀 크리티컬해 보임
+### 결론
+- 아직은 쓰지 말자
+
 ### 사용하지 말아야할 때
 - 쓸모없는 props 비교 -> 대부분 false를 반환하는 비교 함수
 ### React.memo with callback function
