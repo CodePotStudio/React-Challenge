@@ -233,6 +233,32 @@ useEffect(() => {
 - 리액트가 `{id:1}`을 다루는 클린업을 실행한다.
 - 리액트가 `{id:2}`로 이펙트를 실행한다.
 
+앞서서 여러번 설명했듯 매 렌더링마다 내부의 __모든 함수는__ 불변의 props/state를 바라보기 떄문에 `{id:1}`의 클린업이 중간에 있어도 이상하지 않습니다.
+
+## 라이프사이클이 아니라 동기화
+
+useEffect는 __리액트 트리 바깥에__ 있는 것들을 __props와 state에 따라 동기화__ 할 수 있게 합니다.
+
+리액트는 우리가 지정한 props와 state에 따라 DOM과 동기화합니다. 랜더링 시 "마운트" 와 "업데이트" 의 구분이 없습니다.
+
+```javascript
+function Greeting({ name }) {
+  useEffect(() => {
+    document.title = 'Hello, ' + name;
+  });
+  return (
+    <h1 className="Greeting">
+      Hello, {name}
+    </h1>
+  );
+}
+```
+_이제 위 코드에서 `마운트/업데이트/언마운트`는 잊어야합니다._
+
+컴포넌트가 첫번째로 랜더링할 때와 그 후에 다르게 동작하는 이펙트를 작성하려고 한다면, 위에서 언급한 것처럼 흐름을 거슬러야합니다. 
+
+DOM의 동기화는 지금껏 아무런 의심없이 이루어졌습니다. 그렇다면 Effect는 어떨까요.
+Effect를 버그 없이(글 초반에 제시한 문제들을) 수행할 수 있을까요?
 
 ---
 https://rinae.dev/posts/a-complete-guide-to-useeffect-ko
