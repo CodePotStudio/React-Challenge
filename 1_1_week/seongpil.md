@@ -95,9 +95,31 @@ function Counter() {
 
 ~~답: 3~~
 
-> 클래스 컴포넌트였다면 5가 나올수도 있다. (물론 3이 나오게할 방법이 있기 때문에 가능성으로 표현)
+> 클래스 컴포넌트였다면 5가 나올수도 있습니다. (물론 3이 나오게할 방법이 있기 때문에 가능성으로 표현)
 
 매 랜더링 시, 그 내부 props와 state는 영원히 같은 상태로 유지됩니다.
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(`You clicked ${count} times`);
+    }, 3000);
+  });
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+![](https://overreacted.io/a5727d333c270e05942f508707265378/timeout_counter.gif)
 
 ## Each Render Has Its Own Effects
 
@@ -137,7 +159,79 @@ for (var i = 0; i < 4; i++) {
 }
 ```
 
+함수형 컴포넌트에서 props와 state는 불변값이지만, 클래스 컴포넌트의 props와 state는 `this`로 인해 가변이됩니다.(구조분해 할당, 혹은 변수 할당을 통해 불변으로 만들 수 있지만 매번 변수를 할당하는 불편함이 생깁니다)
+
 ## 흐름을 거슬러 올라가기
+
+앞서 state와 props는 매 렌더링 안에서 불변이라는 것을 확인했습니다.
+따라서 아래 코드는 완전히 동일합니다.
+```javascript
+function Example(props) {
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(props.counter);
+    }, 1000);
+  });
+  // ...
+}
+function Example(props) {
+  const counter = props.counter;
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(counter);
+    }, 1000);
+  });
+  // ...
+}
+```
+
+만약 최신의 `counter`, 즉 렌더링 시점의 값과 상관 없이 최신의 값을 사용하고 싶을 땐 어떻게 할까요 
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+  const latestCount = useRef(count);
+  useEffect(() => {
+    // 변경 가능한 값을 최신으로 설정한다
+    latestCount.current = count;
+    setTimeout(() => {
+      // 변경 가능한 최신의 값을 읽어 들인다
+      console.log(`You clicked ${latestCount.current} times`);
+    }, 3000);
+  });
+  // ...
+}
+```
+
+![](https://overreacted.io/78f7948263dd13b023498b23cb99f4fc/timeout_counter_refs.gif)
+
+class 컴포넌트는 이런식으로 `this.state`를 재할당하고 있습니다.
+
+## 그러면 클린업(cleanup)은 뭐지?
+
+리액트 공식 문서에 있는 예제입니다.
+```javascript
+useEffect(() => {
+  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange);
+  return () => {
+    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange);
+  };
+});
+```
+첫번째 렌더링에서 `props`이 `{id:1}`, 두번째에서 `{id:2}`라고 가정합시다.
+다음은 우리의 예상입니다.
+- 리액트가 `{id:1}`을 다루는 이펙트를 클린업한다.
+- 리액트가 `{id:2}`로 UI를 렌더링한다.
+- 리액트가 `{id:2}`로 이펙트를 실행한다.
+
+이는 class 컴포넌트의 라이프사이클 멘탈 모델을 적용한 흐름입니다. 그러므로 틀렸습니다.
+
+[공식 문서](https://ko.reactjs.org/docs/hooks-reference.html#timing-of-effects)에서 볼 수 있듯 useEffect는 모든 렌더링을 완료한 후 실행됩니다.(이펙트가 스크린 업데이트를 가로막지 않기 위함 자세한 내용은 [영상](https://www.youtube.com/watch?v=ZCuYPiUIONs&t=431s)으로 확인)
+
+- 리액트가 `{id:2}`로 UI를 렌더링한다.
+- 브라우저가 실제로 화면에 `{id:2}`를 반영한 UI를 그린다.
+- 리액트가 `{id:1}`을 다루는 클린업을 실행한다.
+- 리액트가 `{id:2}`로 이펙트를 실행한다.
 
 
 ---
