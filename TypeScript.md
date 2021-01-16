@@ -128,6 +128,37 @@ class DigitalClock implements Clock{
     constructor(h: number, m: number) { }
 }
 ```
+### Interface vs Type Alias
+#### 공통점
+- 타입에 대한 이름을 명명할 수 있다.
+```typescript
+interface Human{
+    name: string;
+    age: number;
+}
+
+type Human = {
+    name: string;
+    age: number;
+}
+```
+- 여러 Type에 대한 관계 정의(extends, implements, Intersection Type, Union Type)
+#### 차이점
+- Interface는 `Declaration Merging이 가능`하지만, type은 불가능 -> OCP에 따라 extends에 열려있는 js 객체의 동작방식과 비슷하게 연결하도록 설계됨
+- 따라서 Interface의 사용을 권고, type alias는 Union Type 또는 Tuple Type을 반드시 써야하는 상황에서 사용
+##### Declaration Merging
+- 컴파일러가 같은 이름으로 선언된 두 개의 개별적 선언을 하나로 합치는 것
+```typescript
+interface Box{
+    height: number;
+    width: number;
+}
+
+interface Box{
+    scale: number;
+}
+let box: Box = {height: 5, width: 6, scale: 10};
+```
 
 ## Class
 - Class 기반 객체 지향 프로그래밍 지원
