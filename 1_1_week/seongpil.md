@@ -496,4 +496,6 @@ Google Docs에서 문서를 편집하는 것은 실제로 서버에 모든 페�
 바로 `useReducer`가 대안이 될 수 있습니다.
 
 ---
-https://rinae.dev/posts/a-complete-guide-to-useeffect-ko
+
+#### Reference
+https://overreacted.io/ko/a-complete-guide-to-useeffect/
