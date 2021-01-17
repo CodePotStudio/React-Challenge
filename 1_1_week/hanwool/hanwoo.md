@@ -53,13 +53,13 @@ gutter: 24px
 
 ```jsx
 .container {
-				display: grid;
-				grid-template-columns: repeat(6, minmax(0, 72px));
-				column-gap: 16px;
-				margin: 0 16px;
-				justify-content: center;
-				background-color: bisque;
-			}
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 72px));
+	column-gap: 16px;
+	margin: 0 16px;
+	justify-content: center;
+	background-color: bisque;
+}
 
 @media (min-width: 1084px) {
 	.container {
