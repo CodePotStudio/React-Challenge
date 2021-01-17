@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				font-size: 1rem;
+				line-height: 1.6;
+				font-family: -apple-system, BlinkMacSystemFont, Bazier Square,
+					Noto Sans KR, Segoe UI, Apple SD Gothic Neo, Roboto, Helvetica Neue,
+					Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
+					Noto Color Emoji;
+			}
+
+			img {
+				max-width: 100%;
+				display: block;
+			}
+
+			.container {
+				display: grid;
+				grid-template-columns: 10% 40% 40% 10%;
+			}
+
+			.container > a {
+				grid-column: 2 / span 1;
+				display: flex;
+			}
+
+			.logo {
+				width: 100px;
+				height: 50px;
+				object-fit: cover;
+				align-self: center;
+			}
+
+			.nav {
+				grid-column: 3 / span 1;
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
+			}
+
+			.nav-item {
+				font-size: 1.2rem;
+				margin-left: 1em;
+			}
+
+			.nav-item:hover {
+				color: darkgrey;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="#">
+				<img class="logo" src="logo.png" />
+			</a>
+			<nav class="nav">
+				<div class="nav-item">Home</div>
+				<div class="nav-item">About</div>
+				<div class="nav-item">Login</div>
+			</nav>
+		</div>
+	</body>
+</html>
