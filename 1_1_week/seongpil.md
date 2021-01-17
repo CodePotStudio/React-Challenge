@@ -260,5 +260,209 @@ _이제 위 코드에서 `마운트/업데이트/언마운트`는 잊어야합�
 DOM의 동기화는 지금껏 아무런 의심없이 이루어졌습니다. 그렇다면 Effect는 어떨까요.
 Effect를 버그 없이(글 초반에 제시한 문제들을) 수행할 수 있을까요?
 
+## 리액트에게 이펙트를 비교하는 법을 가르치기
+
+리액트는 바뀐 DOM만 업데이트 합니다.
+
+```html
+<!-- 아래 DOM을 -->
+<h1 className="Greeting">Hello, Dan</h1>
+
+<!-- 이렇게 업데이트 한다면 -->
+<h1 className="Greeting">Hello, Yuzhi</h1>
+```
+
+리액트는 두 객체를 비교합니다.
+```javascript
+const oldProps = {className= 'Greeting', children: 'Hello, Dan'};
+const newProps = {className= 'Greeting', children: 'Hello, Yuzhi'};
+```
+
+props를 비교했을 때 className는 동이하고 children만 다릅니다. 그래서 다음 코드만 호출됩니다.
+
+```javascript
+domNode.innerText = 'Hello, Yuzhi';
+// domNode.className은 건드리지 않음
+```
+
+이처럼 이펙트도 비교하여 호출을 최적화 할 수 있을까요? 아래 컴포넌트는 매 클릭마다 이펙트를 다시 실행할겁니다.
+
+```javascript
+function Greeting({ name }) {
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    document.title = 'Hello, ' + name;
+  });
+
+  return (
+    <h1 className="Greeting">
+      Hello, {name}
+      <button onClick={() => setCounter(count + 1)}>
+        Increment
+      </button>
+    </h1>
+  );
+}
+```
+
+하지만 이는 불합리합니다. name은 변화가 없고 단지 count만 변하니까요. 하지만 이펙트는 함수를 받고있고, 이 함수는 실행되기 전까지 다른 결과를 불러오는 함수인지 아닌지 리액트는 알 수 없습니다.
+
+```javascript
+let oldEffect = () => { document.title = 'Hello, Dan'; };
+let newEffect = () => { document.title = 'Hello, Dan'; };
+```
+
+여기서 우리가 알고 있는 `deps`가 등장합니다. 리액트에게 의존성 배열을 알려줍니다.
+
+```javascript
+useEffect(() => {
+  document.title = 'Hello, ' + name;
+}, [name]); // 우리의 의존성
+```
+
+> Hey react! 네가 이 함수의 안쪽을 볼 순 없지만, 그 안에서 `name`이외의 값은 쓰지 않는다고 약속할게! 
+
+```javascript
+const oldEffect = () => { document.title = 'Hello, Dan'; };
+const oldDeps = ['Dan'];
+const newEffect = () => { document.title = 'Hello, Dan'; };
+const newDeps = ['Dan'];
+```
+
+이전과 현재의 의존성에 변화가 없으므로 리액트는 이펙트를 실행하지 않습니다. 의존성 배열안에 하나라도 값이 다르다면 이펙트는 실행될겁니다. 리액트는 모든걸 __동기화 해야하니까요.__
+
+## 리액트에게 의존성으로 거짓말하지 마라
+
+함수형 컴포넌트에서 클래스형 컴포넌트의 습관을 이어갈 때 아래와같은 실수를 저지르기 쉽습니다.(최초 렌더링시 데이터 fetching)
+
+```javascript
+function SearchResults() {
+  async function fetchData() { /* ... */ }
+
+  useEffect(() => {
+    fetchData();
+  }, [])}
+```
+
+> 그러면 처음에만 데이터를 불러오고 싶은데 어떻게 합니까?
+
+위 문제는 차차 해결하고 아래와 같은 사항을 기억합시다.
+- `deps`를 지정한다면, 컴포넌트에 있는 모든 값(state, props, 함수) 중 그 이펙트에 사용될 값은 반드시 거기(deps)에 있어야 한다
+- 의존성을 제거하는 것(빈 배열)은 문제를 해결하는 능사는 아니다
+
+## 의존성으로 거짓말을 하면 생기는 일
+
+아래 코드는 잘 작동합니다.
+```javascript
+useEffect(() => {
+  document.title = 'Hello, ' + name;
+}, [name]);
+```
+하지만 아래 코드는 제대로 동작하지 않습니다.
+```javascript
+useEffect(() => {
+  document.title = 'Hello, ' + name;
+}, []);
+```
+여기까진 꽤 명확해 보입니다. 조금 더 복잡한 예제를 살펴보죠.
+
+매 초마다 숫자가 올라가는 카운터를 작성해봅시다. 클래스 컴포넌트 기반의 개념을 적용한다면
+- 인터벌을 한번만 설정하고
+- 한번만 제거하자
+
+```javascript
+class Counter extends React.Component {
+  state = { count: 0 };
+
+  componentDidMount() {
+    this.interval = setInterval(this.tick, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+  tick = () => {
+    this.setState({
+      count: this.state.count + 1
+    });
+  }
+  render() {
+    return <h1>{this.state.count}</h1>;
+  }
+}
+```
+잘 동작하는 코드입니다. 이를 함수형으로 옮겨보겠습니다.
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // 흠...
+  return <h1>{count}</h1>;
+}
+```
+이 코드는 잘 동작하지 않습니다. [숫자는 한번만 증가합니다.](https://codesandbox.io/s/91n5z8jo7r)
+
+여러분의 멘탈 모델이 기존의 "의존성 배열은 내가 언제 이펙트를 다시 실행해야 할지 지정할 때 쓰인다."라면 납득되지 않는 결과입니다. 왜그럴까요?
+
+앞서 당부드렸던 것이 기억나시나요? 의존성 배열은 리액트에게 렌더링 스코프(컴포넌트 안쪽, 이펙트 바깥)에 나온 값 중 이펙트에 쓰이는 것을 전부 알려주는 것이라고요.
+
+분명 이펙트 안에서 count를 사용했지만 의존성 배열에는 아무것도 없습니다. __여러분의 거짓말로 버그가 터졌습니다!__
+
+일단 차분히 디버깅을 해봅시다. 첫번쨰 렌더링에서 count는 몇인가요? 네, 0입니다. 그렇다면 처음 인터벌 안에서 실행된 코드는 다음과 같습니다 
+
+```javascript
+setCount(0 + 1); // 매 초마다 실행되는 함수는 이것입니다.
+```
+
+setCount를 호출 했으니 리액트는 두번째 렌더링을 실행합니다. 하지만 의존성배열은 비어있으므로 이전과 동일하기 때문에 우리의 이펙트는 절대 실행되지 않습니다.
+
+기억 나시나요? 함수형 컴포넌트는 매 렌더링 마다 고유의/불변의 props,state, 함수를 갖습니다. `setInterval`로 `setCount(count + 1)`을 매 초마다 실행하지만 이 때 우리가 기대한건 `count`가 0, 1, 2, 3...으로 증가하는 것이지만, 저 count는 영원히 __0__ 입니다. 그래서 화면엔 1만 보이는 것이죠. `setInterval`안에서 `console.log(count)`를 실행해 보시면 더 확실히 알 수 있습니다.
+
+이제 리액트에게 거짓말을 하면 어떤 일이 생기는지 확인했습니다. 이제부터는 솔직하게 의존성을 명시한느 것을 대원칙으로 받아드립시다.
+
+## 의존성을 솔직하게 적는 2가지 방법
+
+> 첫번째 방법을 사용해보고, 필요하다면 두번째 방법을 사용하세요.
+
+### 1. 컴포넌트 안에 있고, 이펙트에서 사용되는 모든 값을 deps에 추가
+
+```javascript
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, [count]);
+```
+네, 동작은 하지만 우리가 원하는 형태는 절대 아닙니다.(setInterval이 매 렌더링마다 실행되고, 클린업 될테니까요) 하지만 우리가 고쳐야할 첫번째 문제를 해결했습니다.
+
+### 2. 이펙트 코드를 수정하여, 우리가 원하는 것보다 자주 바뀌는 값을 요구하지 않도록 만들기
+
+말이 어려운데, 의존성에 대해 거짓말을 하지 않은 채 의존성을 적게 넘겨주라는 뜻입니다.
+
+## 이펙트가 자급자족 하도록 만들기
+
+이펙트에서 __왜 `count`를 쓰고 있나요?__ 오직 `setCount`를 위해 사용하고 있습니다. 이런 경우 간단히 해결할 수 있습니다. `setState`의 [함수형 업데이터](https://reactjs.org/docs/hooks-reference.html#functional-updates)를 사용하면 됩니다.
+
+```javascript
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(c => c + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+```
+count + 1
+```
+이 코드는 `count`에 1을 더해서 리액트에게 __돌려주기 위해__ 사용됐습니다. 리액트는 사실 `count`를 이미 알고 있습니다. 우리가 진짜로 리액트에게 알려줘야하는 건 __"지금 값이 뭐든 간에 1을 더해줘"__ 입니다.
+
 ---
 https://rinae.dev/posts/a-complete-guide-to-useeffect-ko
