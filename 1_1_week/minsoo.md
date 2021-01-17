@@ -159,6 +159,20 @@ Person.prototype.fullName = function(){
 }
 ```
 
+실제 동작은 prototype 문법으로 작동하지만 (ES6 이후) class 문법을 사용하여 마치 클래스인 것처럼 사용할 수 있다.
+
+```javascript
+class Person {
+  constructor(first, last) {
+    this.first = first;
+    this.last = last;
+  }
+  fullname () {
+    return this.first + ' ' + this.last;
+  }
+}
+```
+
 
 
 ## 내장 함수
