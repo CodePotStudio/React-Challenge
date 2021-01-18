@@ -74,10 +74,119 @@ const callbackFunction = useCallback(()=>{
 - create 함수와 의존성 값 배열 전달시 의존성이 변경되었을 때에 memoization 값 다시 계산
 - 이를 통해 전달된 함수는 `렌더링 중에 실행`된다.
 ```typescript
-const memoizedValue = useMemo(() => computeValue(a,b), 
-[a,b]); //없는 경우 렌더링 마다 새 값을 계산
+const memoizedValue = useMemo(() => computeValue(a,b)
+                  , [a,b]); //없는 경우 렌더링 마다 새 값을 계산
 ```
 
+### useRef
+- Class Component에서 사용하는 ContextAPI를 Functional Component에서 사용할 수 있게 하는 훅
+#### Context
+- Context를 사용하여 단계마다 일일이 Props를 넘겨주지 않고, Component Tree 전체에 데이터 제공 가능(Redux?)
+- 즉, Global하게 Data(State)를 공유
+```js
+class App extends React.Component {
+  render() {
+    return (<Toolbar theme="dark" />);
+  }
+}
+
+function Toolbar(props){
+  return (<div> 
+      <ThemedButton theme={props.theme} />  {/* theme props를 명시적으로 넘겨주고 있다. */}
+    </div>);
+}
+
+class ThemedButton extends React.Component {
+  render() {
+    return <Button theme={this.props.theme} />;
+  }
+}
+
+///아래는 Context 사용
+const ThemeContext = React.createContext('light');
+
+class App extends React.Component {
+  render() {
+    return (
+      <ThemeContext.Provider value="dark">
+        <Toolbar />
+      </ThemeContext.Provider>
+    );
+  }
+}
+
+function Toolbar(){
+  return (
+    <div>
+      <ThemedButton /> {/* 여기서는 테마를 넘기지 않는다.*/}
+    </div>
+  );
+}
+
+class ThemedButton extends React.Component {
+  static contextType = ThemeContext;
+  render(){  {/* Context를 사용하여 렌더링*/}
+    return <Button theme={this.context} />;
+  }
+}
+```
+##### 주의점
+- Context를 자주 사용하면 컴포넌트의 재사용이 어려워진다.
+- 여러 level에 걸쳐 props를 넘길 때에는 `Component Composition이 더 효과적`일 수 있다.
+#### Component Composition
+- Inheritance 대신 Composition을 사용하여 Component 간 코드를 재사용하는 것이 좋다.
+##### Component에 다른 Component 담기
+- 어떤 자식 element가 들어올 지 예상할 수 없는 경우, 특수한 children prop를 사용하여 Children element를 그대로 전달하는 것이 좋다.
+```js
+function FancyBorder(props) {
+  return (
+    <div className={'FancyBorder FancyBorder-' + props.color}>
+      {props.children}
+    </div>
+  );
+}
+//이런 방식으로 다른 Component에서 JSX를 중첩하여 임의의 Children을 전달할 수 있다.
+function WelcomeDialog() {
+  return (
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">
+        Welcome
+      </h1> {/* FancyBorder 안에 있는 것들이 children props로 전달되어 출력.*/}
+      <p className="Dialog-message">
+        Thank you for visiting our spacecraft!
+      </p>
+    </FancyBorder>
+  );
+}
+```
+##### 특수화
+- Composition을 통해 `구체적인 Component`가 `일반적인 Component`를 렌더링하고 props를 통해 내용 구성
+- props로 동적으로 값을 전달하는 것을 일컫는 듯
+```js
+function Dialog(props) {
+  return (
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">
+        {props.title}
+      </h1>
+      <p className="Dialog-message">
+        {props.message}
+      </p>
+    </FancyBorder>
+  );
+}
+
+function WelcomeDialog() {
+  return (
+    <Dialog
+      title="Welcome"
+      message="Thank you for visiting our spacecraft!" />
+  );
+}
+```
+#### 결론
+- Redux + slice + saga 구조에서 사용할 일이 있을지 모르겠는 Hook
+- 그래서 아직까지는 사용해 본 적이 없다.
 ## List & Key
 ### Key
 - List로 삽입된 Component에서 key는 React가 어떤 항목을 변경, 추가, 제거할 지 식별하는 것을 도움
