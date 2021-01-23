@@ -499,6 +499,50 @@ class Article extends Component {
 }
 ```
 
+하지만 버그가 있습니다. 네트워크 요청은 비동기적이며 무엇이 먼저 끝날지 모릅니다. 아쉽게도 __이펙트는 이런상황을 해결할 수 없습니다.__ (async함수는 이펙트에 전달하면 경고가 나타납니다...)
+
+비동기 접근 방식이 취소 기능(abort)를 지원한다면 클린업을 사용할 수 있을 것입니다.(이게 가장 best practice) 
+
+그렇지 않다면 직접 flag를 만들어 사용해야 합니다.
+
+```javascript
+function Article({ id }) {
+  const [article, setArticle] = useState(null);
+
+  useEffect(() => {
+    let didCancel = false;
+    async function fetchData() {
+      const article = await API.fetchArticle(id);
+      if (!didCancel) {
+        setArticle(article);
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      didCancel = true;
+    };
+  }, [id]);
+
+  // ...
+}
+```
+
+[이 링크의 글은](https://www.robinwieruch.de/react-hooks-fetch-data) 어떻게 에러를 다루고 상태를 불러올지, 또한 이런 로직을 어떻게 커스텀 훅으로 추상화할 수 있는지 소개합니다. 훅으로 데이터를 페칭하는 방법을 더 자세히 알고 싶다면 꼭 읽어보세요.
+
+## 진입장벽을 더 높이기
+
+props와 state를 통해 UI 일관성을 보장 받지만, 사이드 이펙트는 일관적이지 않을 확률이 높습니다. 하지만 이를 리액트의 데이터 흐름(동기화!)의 일환으로 활용하려면 useEffect를 제대로 작성해야합니다.
+
+하지만 이글의 분량처럼 이는 쉽지않은 배움의 여정이기도 합니다. 골치 아파지는군요.
+
+다행히 `useFetch`, `useTheme`같은 커스텀훅을 만들어 앱에서 사용한다면 __직접 useEffect를 다룰일은__ 그리 많지 않을것입니다.
+
+대부분 Data fetching을 위해 useEffect를 많이 사용하는데, Suspense가 정식(안정적)으로 제공되면 `useEffect`를 직접 사용할 일은 앞으로 줄어들것입니다.
+
+그렇게된다면 `useEffect`는 더욱 로우 레벨로 내려가 파워유저들이 진정으로 props와 state를 동기화 할 필요가 있을 때 사용하는 API가 될것입니다.
+
 ---
 
 #### Reference
