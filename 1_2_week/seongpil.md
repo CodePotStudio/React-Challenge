@@ -101,10 +101,137 @@ function Counter({ step }) {
 ```
 
 - `dispatch`는 액션(`{type: 'tick'}`)만을 기억한 채 rerendering을 실행합니다.
-- 다음 렌더링시에 컴포넌트 내부의 reducer가 다시 useReducer에 의해 호출됩니다.
-- 이때 props는 reducer함수 스코프에서 읽을 수 있으므로 이펙트 내부와는 관련이 없게됩니다.
+- 다음 렌더링시에 컴포넌트 내부의 reducer라는 이름의 함수가 다시 useReducer에 의해 호출됩니다.
+- 이 순간의 props는 reducer함수 스코프에서 접근할 수 있으므로 이펙트 내부와는 관련이 없게됩니다.
 
-이로써 __업데이트 로직과 그로 인해 무엇이 일어나는지 서술하는 것을 분리할__ 수 있도록 만들어줍니다
+이로써 state와 props를 함께 품은채, __업데이트 로직과 그로 인해 무엇이 일어나는지 서술하는 것을 분리할__ 수 있도록 만들어줍니다. 이로써 이펙트의 불필요한 의존성을 제거하고 이로인해 필요할 때보다 더 자주 실행되는것을 피할 수 있도록 도와줍니다.
+
+치트모드라 부를만 하군요.
+
+> note: 의존성을 최소화 하는 방향으로 이펙트를 작성해라?
+
+## 함수를 이펙트 안으로 옮기기
+
+흔한 실수
+
+```javascript
+function SearchResults() {
+  const [data, setData] = useState({ hits: [] });
+
+  async function fetchData() {
+    const result = await axios(
+      'https://hn.algolia.com/api/v1/search?query=react',
+    );
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []); // 거짓말 하지 말라 그랬을 텐데?
+}
+```
+
+동작은 합니다만, __로컬 함수를 의존성에서 제외하는 것은__ 컴포넌트가 더 복잡해질 경우 일관된 동작을 보장하기 어려울 수 있다는 것입니다.
+
+```javascript
+function SearchResults() {
+  // 이 함수가 길다고 상상해 봅시다
+  function getFetchUrl() {
+    return 'https://hn.algolia.com/api/v1/search?query=react';
+  }
+
+  // 이 함수도 길다고 상상해 봅시다
+  async function fetchData() {
+    const result = await axios(getFetchUrl());
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // ...
+}
+```
+
+시간이 흘러 `getFetchUrl`이 상태값을 하나 사용한다고 생각해봅시다.
+
+```javascript
+function SearchResults() {
+  const [query, setQuery] = useState('react');
+
+  // 이 함수가 길다고 상상해 봅시다
+  function getFetchUrl() {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }
+
+  // 이 함수가 길다고 상상해 봅시다
+  async function fetchData() {
+    const result = await axios(getFetchUrl());
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // ...
+}
+```
+
+이제 느낌이 옵니다. `query`가 바뀌었지만 deps를 수정하지 않았기 때문에(우리눈엔 문제가 보이지만, 주석에 써있듯 코드가 매우 길다고 상상해 봅시다. 인간의 인지능력으로 빼먹을 수도 있습니다) 문제가 됩니다.
+
+일단 쉬운 해결책이 있습니다. __어떤 함수를 이펙트 안에서만 호출한다면, 그 함수의 선언을 이펙트 안으로 옮기세요.__
+
+```javascript
+function SearchResults() {
+  // ...
+  useEffect(() => {
+    // 아까의 함수들을 안으로 옮겼어요!
+    function getFetchUrl() {
+      return 'https://hn.algolia.com/api/v1/search?query=react';
+    }
+    async function fetchData() {
+      const result = await axios(getFetchUrl());
+      setData(result.data);
+    }
+    fetchData();
+  }, []); // ✅ Deps는 OK
+  // ...
+}
+```
+
+단박에 `query` state를 deps에 추가하고 싶은 욕구가 있지만, 그보다 먼저 위 코드 상태에서 살펴봐야할 것은, 이렇게 함수를 옮김으로써 __의존성 전이 현상을__ 걱정하지 않아도 된다는 것입니다.
+
+`getFetchUrl`은 언제든 상태로 인해 오염될 수 있습니다. 다행히 이 함수는 이펙트 안에서만 사용되고 있고, 이펙트 안에 넣어도 된다는 의미입니다. 이제 이 긴 컴포넌트(예제는 짧아보이지)를 수정하더라도 문제가 발생할 확률은 줄어듭니다. 실제로 state를 사용하도록 변경해볼까요?
+
+```javascript
+function SearchResults() {
+  const [query, setQuery] = useState('react');
+
+  useEffect(() => {
+    function getFetchUrl() {
+      return 'https://hn.algolia.com/api/v1/search?query=' + query;
+    }
+
+    async function fetchData() {
+      const result = await axios(getFetchUrl());
+      setData(result.data);
+    }
+
+    fetchData();
+  }, [query]); // ✅ Deps는 OK
+  // ...
+}
+```
+
+다행히 `eslint-plugin-react-hooks` 플러그인의 `exhaustive-deps` 린트 룰을 사용하면 쉽게 의존성을 분석할 수 있습니다.
+
+![](https://overreacted.io/04a90dcbacb01105d634964880ebed19/exhaustive-deps.gif)
+
+## 하지만 저는 이함수를 이펙트 안에 넣을 수 없어요
+
+
 
 ---
 
