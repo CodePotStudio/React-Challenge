@@ -379,6 +379,126 @@ function Child({ fetchData }) {
 
 ## 함수도 데이터 흐름의 일부인가?
 
+위 Parent-Child 패턴은 클래스 컴포넌트에서 제대로 동작하지 않습니다. 이를 통해 이펙트와 라이프사이클 패러다임의 차이를 확인할 수 있습니다.
+
+```javascript
+class Parent extends Component {
+  state = {
+    query: 'react'
+  };
+  fetchData = () => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + this.state.query;
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  };
+  render() {
+    return <Child fetchData={this.fetchData} />;
+  }
+}
+
+class Child extends Component {
+  state = {
+    data: null
+  };
+  componentDidMount() {
+    this.props.fetchData();
+  }
+  render() {
+    // ...
+  }
+}
+```
+
+`componentDidUpdate`를 사용할 수 있을까요?
+
+```javascript
+class Child extends Component {
+  // ...
+  componentDidUpdate(prevProps) {
+    // 🔴 이 조건문은 절대 참이 될 수 없다
+    if (this.props.fetchData !== prevProps.fetchData) {
+      this.props.fetchData();
+    }
+  }
+}
+```
+
+그렇다고 조건문을 뺄수도 없습니다. 재렌더링마다 실행될테니까요.
+
+```javascript
+render() {
+  return <Child fetchData={this.fetchData.bind(this, this.state.query)} />;
+}
+```
+
+이렇게 특정 쿼리를 바인딩 하면? `query`가 바뀌지 않았는데도 `this.props.fetchData !== prevProps.fetchData`는 언제나 참이 돼서 매번 요청을 날리게 됩니다.
+
+쉬운 해결책은 `query`를 `Child`에게 주는 것입니다. `Child`는 `query`를 사용하지 않는데 말이죠...
+
+```javascript
+class Child extends Component {
+  // ...
+  componentDidUpdate(prevProps) {
+    if (this.props.query !== prevProps.query) {
+      this.props.fetchData();
+    }
+  }
+  // ...
+}
+```
+
+__클래스 컴포넌트에서, 함수 prop은 실제로 데이터 흐름에서 차지하는 부분이 없습니다.__ 함수는 가변성이 있는 `this`에 묶인채 매 호출마다 일관성을 담보하기 어렵게 돼있습니다. 그래서 그동안 __함수만 필요한 상황에서도__ 온갖 다른 데이터를 전달해 차이를 비교해야 했습니다. `this.props.fetchData`가 어떤 상태에 의존성을 갖고 있는지, 그냥 상태가 바뀌기만 한것이지 알 수 없었습니다.
+
+`useCallback`은 이러한 함수를 데이터 흐름에 포함시킵니다.
+- 함수의 입력값이 바뀌면
+- 함수 자체가 바뀌고
+- 그렇지 않다면 같은 함수로 남아있다
+
+비슷한 케이스로 `useMemo`또한 복잡한 객체에 대해 같은 방식의 해결책을 제공합니다.
+
+```javascript
+function ColorPicker() {
+  // color가 진짜로 바뀌지 않는 한
+  // Child의 얕은 props 비교를 깨트리지 않는다
+  const [color, setColor] = useState('pink');
+  const style = useMemo(() => ({ color }), [color]);
+  return <Child style={style} />;
+}
+```
+
+그렇다고 함수를 전달할 때 마다 `useCallback`만 사용하는건 꽤나 투박합니다. 컴포넌트 트리가 깊어지고 복잡해진다면 [공식 문서에서 제안하는 콜백 내리기를 피하는 법](https://reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down)을 참고해보세요.
+
+## 경쟁 상태에 대해
+
+```javascript
+class Article extends Component {
+  state = {
+    article: null
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  async fetchData(id) {
+    const article = await API.fetchArticle(id);
+    this.setState({ article });
+  }
+  // ...
+}
+```
+
+이 코드는 컴포넌트가 업데이트 되면(props id가 바뀌면) 요청을 보내지 않습니다. 아마 다음과 같은 코드가 금방 떠오를 겁니다.
+
+```javascript
+class Article extends Component {
+  // ...
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.fetchData(this.props.id);
+    }
+  }
+  // ...
+}
+```
+
 ---
 
 #### Reference
