@@ -537,9 +537,7 @@ props와 state를 통해 UI 일관성을 보장 받지만, 사이드 이펙트�
 
 하지만 이글의 분량처럼 이는 쉽지않은 배움의 여정이기도 합니다. 골치 아파지는군요.
 
-다행히 `useFetch`, `useTheme`같은 커스텀훅을 만들어 앱에서 사용한다면 __직접 useEffect를 다룰일은__ 그리 많지 않을것입니다.
-
-대부분 Data fetching을 위해 useEffect를 많이 사용하는데, Suspense가 정식(안정적)으로 제공되면 `useEffect`를 직접 사용할 일은 앞으로 줄어들것입니다.
+다행히 `useFetch`, `useTheme`같은 커스텀훅을 만들어 앱에서 사용하거나 [Suspense가](https://reactjs.org/docs/react-api.html#reactsuspense) 정식(안정적)으로 제공되면 `useEffect`를 직접 사용할 일은 앞으로 줄어들것입니다.
 
 그렇게된다면 `useEffect`는 더욱 로우 레벨로 내려가 파워유저들이 진정으로 props와 state를 동기화 할 필요가 있을 때 사용하는 API가 될것입니다.
 
