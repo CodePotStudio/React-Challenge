@@ -231,7 +231,153 @@ function SearchResults() {
 
 ## 하지만 저는 이함수를 이펙트 안에 넣을 수 없어요
 
+- 한 컴포넌트에 여러 이펙트가 있고
+- 같은 함수를 호출할 때
+- 함수를 복붙하고 싶진 않을 때
 
+이런 함수를 이펙트의 의존성으로 정의해도 괜찮을까요?
+
+```javascript
+function SearchResults() {
+  function getFetchUrl(query) {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }
+
+  useEffect(() => {
+    const url = getFetchUrl('react');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, []); // 🔴 빠진 dep: getFetchUrl
+
+  useEffect(() => {
+    const url = getFetchUrl('redux');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, []); // 🔴 빠진 dep: getFetchUrl
+
+  // ...
+}
+```
+
+앞 챕터에서는 하나의 이펙트만 있었기 때문에 이펙트 안으로 넣기 수월했지만 지금과 같은 경우는 고민이 생깁니다.
+
+- 안으로 넣자니 로직 공유가 안되고
+- 넣지 않고 deps에 넣어봤자 매 렌더링마다 새로 `getFetchUrl`이 선언되기 때문에 이펙트는 의도치 않게 re-rendering마다 호출되고... 
+
+```javascript
+function SearchResults() {
+  // 🔴 매번 랜더링마다 모든 이펙트를 다시 실행한다
+  function getFetchUrl(query) {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }
+  useEffect(() => {
+    const url = getFetchUrl('react');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, [getFetchUrl]); // 🚧 Deps는 맞지만 너무 자주 바뀐다
+
+  useEffect(() => {
+    const url = getFetchUrl('redux');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, [getFetchUrl]); // 🚧 Deps는 맞지만 너무 자주 바뀐다
+
+  // ...
+}
+```
+
+'의존성 배열에서 빼도 동작은 잘 하니 그렇게 할까' 하는 유혹도 생기지만, 그랬다간 추후에 어떤 일이 생길지 앞서 살펴봤습니다.
+
+대신 간단한 해결책 2개가 있습니다.
+
+```javascript
+// ✅ 데이터 흐름에 영향을 받지 않는다
+function getFetchUrl(query) {
+  return 'https://hn.algolia.com/api/v1/search?query=' + query;
+}
+
+function SearchResults() {
+  useEffect(() => {
+    const url = getFetchUrl('react');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, []); // ✅ Deps는 OK
+
+  useEffect(() => {
+    const url = getFetchUrl('redux');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, []); // ✅ Deps는 OK
+
+  // ...
+}
+```
+
+컴포넌트 외부에 선언돼있기 때문에 deps에 넣을 필요도 없습니다. props나 state를 사용할 가능성도 전혀 없습니다.
+
+```javascript
+function SearchResults() {
+  // ✅ 여기 정의된 deps가 같다면 항등성을 유지한다
+  const getFetchUrl = useCallback((query) => {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }, []);  // ✅ 콜백의 deps는 OK
+  useEffect(() => {
+    const url = getFetchUrl('react');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, [getFetchUrl]); // ✅ 이펙트의 deps는 OK
+
+  useEffect(() => {
+    const url = getFetchUrl('redux');
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, [getFetchUrl]); // ✅ 이펙트의 deps는 OK
+
+  // ...
+}
+```
+
+`useCallback`을 사용했습니다. 이로써 공통 함수를 다시 컴포넌트 안으로 불러들였지만, 렌더링마다 다시 선언되지 않습니다. 이 상태로 시간이 흘러 search query를 입력받는 기능이 생겼다고 생각해 봅시다.
+
+```javascript
+function SearchResults() {
+  const [query, setQuery] = useState('react');
+
+  // ✅ query가 바뀔 때까지 항등성을 유지한다
+  const getFetchUrl = useCallback(() => {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }, [query]);  // ✅ 콜백 deps는 OK
+  useEffect(() => {
+    const url = getFetchUrl();
+    // ... 데이터를 불러와서 무언가를 한다 ...
+  }, [getFetchUrl]); // ✅ 이펙트의 deps는 OK
+
+  // ...
+}
+```
+
+query가 같다면 재렌더링 되더라도 이펙트는 실행되지 않습니다. 바뀐다면 `getFetchUrl`함수 또한 바뀔것이며 그로인해 이펙트도 다시 실행될것입니다.
+
+신기하지 않나요? 이것은 그저 데이터 흐름과 동기화에 대한 개념을 받아들인 결과입니다.
+
+```javascript
+function Parent() {
+  const [query, setQuery] = useState('react');
+
+  // ✅ query가 바뀔 때까지 항등성을 유지한다
+  const fetchData = useCallback(() => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + query;
+    // ... 데이터를 불러와서 리턴한다 ...
+  }, [query]);  // ✅ 콜백 deps는 OK
+  return <Child fetchData={fetchData} />
+}
+
+function Child({ fetchData }) {
+  let [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetchData().then(setData);
+  }, [fetchData]); // ✅ 이펙트 deps는 OK
+
+  // ...
+}
+```
+
+그리고 부모로부터 __함수 prop을__ 내려보내는 것 또한 같은 해결책이 적용됩니다. `fetchData`는 `Parent`의 `query`가 바뀔 때만 변하고, 이에따라 `Child`는 필요할 때만 데이터 요청을 실행합니다.
+
+## 함수도 데이터 흐름의 일부인가?
 
 ---
 
