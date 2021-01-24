@@ -54,14 +54,14 @@ ReactDOM.render(React.createElement(Container), domDontainer);
 - Container 컴포넌트는 JSX 문법을 사용하게 되면 가독성이 높아지게 됩니다.
 - 위 test01 코드를 JSX 문법을 사용한 버전으로써 작성하게 되면 이렇게 된다.
 
-hello-world
-|___react.development.js
-|___react.production.min.js
-|___react-dom.development.js
-|___react-dom.production.min.js
-|___simple4.html
-|___src
-    |___simple4.js
+hello-world<br>
+|___react.development.js<br>
+|___react.production.min.js<br>
+|___react-dom.development.js<br>
+|___react-dom.production.min.js<br>
+|___simple4.html<br>
+|___src<br>
+    |___simple4.js<br>
 
 - createElement 함수를 호출하는 코드를 JSX 문법으로 변경하면 이렇게 됩니다.
 
@@ -170,11 +170,11 @@ import { func2 as myFunc2 } from './file1.js'// 4
 - react.development.js,react-dom,development.js 파일을 포함하고 있는 script 태그를 지운다.
 - webpack-test폴더 밑에 src 폴더를 만들고 내용이 없는 index.js,Button.js파일을 만든다.
 
-webpack-test
-|___package.json
-|___index.html
-|___src
-    |___index.js
+webpack-test<br>
+|___package.json<br>
+|___index.html<br>
+|___src<br>
+    |___index.js<br>
     |___Button.js
 
 - 외부 패키지를 설치해 보자
