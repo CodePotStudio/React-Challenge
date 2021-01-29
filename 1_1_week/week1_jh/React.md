@@ -74,8 +74,30 @@ const callbackFunction = useCallback(()=>{
 - create 함수와 의존성 값 배열 전달시 의존성이 변경되었을 때에 memoization 값 다시 계산
 - 이를 통해 전달된 함수는 `렌더링 중에 실행`된다.
 ```typescript
-const memoizedValue = useMemo(() => computeValue(a,b)
-                  , [a,b]); //없는 경우 렌더링 마다 새 값을 계산
+const memoizedValue = useMemo(() => computeValue(a,b), [a,b]); //없는 경우 렌더링 마다 새 값을 계산
+```
+```js
+//예시
+// List가 일정하다고 가정하면, searchText가 바뀌었을 때에만 다시 해당 function을 호출한다.
+// 이 경우엔 searchText가 바뀌면 아래 셋 다 호출이 된다.
+const searchedList = useMemo(()=>{
+  return list.filter(item => item.value.include(searchText));
+}, [list, searchText]);
+
+//searchText가 바뀌거나, filter의 내용이 바뀌는 경우에 호출 된다.
+//filter의 내용이 바뀐 경우에는 아래 function과 pagingList만 호출이 된다.
+//만약 위 searchedList에서 useMemo를 사용하지 않았을 경우, searchedList는 변경이 필요가 없음에도 변경이 일어난다.
+const sortedList = useMemo(()=>{
+  return searchedList.sort((c, n) =>{
+    return c.value - n.value;
+  });
+}, [searchedList, filter]);
+
+//얘는 무슨 일이 있어도 호출이 되므로 굳이 useMemo()를 사용할 필요는 없어 보인다.
+const pagingList = useMemo(()=>{
+  const offset = (page - 1) * 10;
+  return sortedList.slice(offset).slice(0,10);
+}, [sortedList, page]);
 ```
 
 ### useRef
