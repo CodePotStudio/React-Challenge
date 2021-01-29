@@ -284,3 +284,105 @@ function App() {
 - {숫자}.{해시값}.chunk.js 파일에는 Todo.js 파일의 내용이 들어있다.
 - Todo.js파일은 별도의 자바스크립트 파일로 분리되었고 필요한 경우에만 내려받도록 구현된다.
 - 단일 페이지 애플리케이션을 만들기 위해서 react-router-dom 패키지를 이용하는 경우에는 react-router-dom에서 지원하는 기능을 이용해 페이지 단위로 코드 분할을 적용할 수 있다.
+
+## 환경 변수 사용하기
+- create-react-app에서는 빌드 시점에서 환경 변수를 코드로 전달할 수 있다.
+- 환경변수의 경우 개발,테스트,배포 환경별로 다른 값을 적용할 때 유용하다.
+- 코드에서 `process.env.{환경 변수 이름}`으로 접근할 수 있다.
+
+### NODE_ENV 환경 변수 이용하기
+- create-react-app에서는 NODE_ENV 환경 변수를 기본으로 제공한다.
+- npm start로 실행하면 development
+- npm test로 실행하면 test
+- npm run build로 실행하면 production
+
+```
+
+// ...
+console.log(`NODE_ENV= ${process.env.NODE_ENV}`);
+// ...
+
+```
+- npm start를 실행하면 development가 출력되는 것을 확인할 수 있다.
+- `process.env.{환경 변수 이름}`부분은 빌드 시점에 환경 변수값으로 대체된다.
+- npm run build를 실행 후 출력되는 자바스크립트 파일을 열어보면 이러한 코드를 살펴볼 수 있다.
+
+```
+console.log("NODE_ENV = ".concat("production"))
+
+```
+
+### 기타 환경 변수 이용하기
+
+- NODE_ENV 환경변수 이외에 다른 환경 변수는 REACT_APP 접두사를 붙여야 한다.
+- process.env.REACT_APP_ 형태로 접근할 수 있다.
+- 맥: REACT_APP_API_URL= api.myapp.com npm start
+- 윈도우 : set "REACT_APP_API_URL= api.myapp.com" && npm start
+- 환경 변수가 많아지면 .env 파일을 이용하는 것이 좋다.
+
+```
+
+// .env.development 파일
+REACT_APP_DATA_API = dev-api.myapp.com
+REACT_APP_LOGIN_API = div-auth.myapp.com
+
+// .env.test 파일
+REACT_APP_DATA_API=test-api.myapp.com
+REACT_APP_LOGIN_API= test-auth.myapp.com
+
+// .env.production 파일
+REACT_APP_DATA_API = api.myapp.com
+REACT_APP_LOGIN_API = auth.myapp.com
+
+```
+
+## 환경별로 변수가 다르게 출력되는지 확인해보기
+
+```
+//...
+console.log(`REACT_APP_DATA_API = ${process.env.REACT_APP_DATA_API}`);
+console.log(`REACT_APP_LOGIN_API = ${process.env.REACT_APP_LOGIN_API}`);
+//...
+```
+
+- npm start를 실행하면 .env.development 파일의 내용이 출력되는 것을 확인할 수 있다.
+- .env파일에서 로컬 머신에 저장되어진 환경 변수를 이용할 수 있다.
+- npm 버전이 로컬 머신의 npm_version 환경 변수에 저장되어 있다고 한다면 다음과 같이 사용할 수 있다.
+
+```
+
+REACT_APP_NODE_VERSION=$npm_version
+
+```
+
+## autoprefixer
+
+- css에서 비교적 최신 기능을 사용하기 위해서는 밴더 접두사(venderprefix)가 붙은 이름을 사용해야 한다.
+- create-react-app에서 최신 CSS기능을 사용했을 경우 실제로 벤더 접두사가 자동으로 붙는지 확인해본다.
+- src 폴더 밑에 test.css파일을 만들고 App.js에서 test.css파일을 가져오면 된다.
+
+```
+//test.css 파일의 내용
+.prefix-example {
+    writing-mode:horizontal-tb;
+    scroll-snap-type: y mandatory;
+}
+
+// App.js 파일의 내용
+import './test.css';
+```
+
+- npm run build를 실행하고 build/static/css 폴더 밑에 생성되는 css파일을 열어보면 다음과 같다.
+
+```
+.prefix-example {
+    -webkit-writing-mode: horisontal-tb;
+    -mb-writing-mode: lr-tb;
+    writing-mode: horizontal-tb;
+    -webkit-scroll-snap-type: y mandatory;
+    -ms-scroll-snap-type: y mandatory;
+    scroll-snap-type: y mandatory;
+}
+
+// 처음에 입력했던 CSS 속성 외에도 다른 속성이 자동으로 추가된것을 알 수 있다.
+```
