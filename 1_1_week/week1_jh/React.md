@@ -223,13 +223,16 @@ function WelcomeDialog() {
 - 이를 통해 불필요한 Re-rendering을 건너뛸 수 있다.
 - Functional Component가 같은 props로 자주 렌더링될 것이라 예상될 때 사용한다.
 - 성능 관련 변경이 잘못 적용된다면, 성능이 오히려 악화될 수 있다.
+- 해당 컴포넌트가 Main 컴포넌트일 때는 사용할 필요가 없어 보인다.
+- 특정 컴포넌트의 한 부분을 차지하는 컴포넌트의 경우, 다른 부분이 re-render되었을 때 re-render가 안되도록 사용을 할 수 있다.
+- 하지만 main 컴포넌트의 경우에는 컴포넌트 내의 한 부분이 변경되는 경우 전체 re-render가 일어나기 때문에 사용할 필요가 없다.
 - 얕은 비교를 하므로 비교 방식을 수정하고 싶다면 아래와 같이
 ```typescript
 React.memo(Component, [areEqual(prevProps, nextProps)]);
 ```
 ### 동작
 1. React.memo()로 Component가 Wrapping되면 렌더링 후 결과를 `Memoizing`
-1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재아용
+1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재사용
 
 ## React.FC
 - props의 Type을 Generic으로 넣어서 사용한다.
