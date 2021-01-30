@@ -234,6 +234,22 @@ React.memo(Component, [areEqual(prevProps, nextProps)]);
 1. React.memo()로 Component가 Wrapping되면 렌더링 후 결과를 `Memoizing`
 1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재사용
 
+### 의문
+```js
+//App.js
+const App = () =>{
+  ...
+  <AppHeader/> //햄버거메뉴가 존재, 클릭시 사이드 바가 튀어 나옴(기존 화면은 유지하고 덮어씌우는 형식)
+  <Route path={'/compa'} exact component={CompA}/>
+}
+
+//CompA.js
+const CompA = () =>{
+  return <div/>
+}
+export default React.memo(CompA);
+//햄버거 메뉴를 클릭하면 memo에 의해 CompA는 re-render가 안될 것이라고 생각했는데 왜 얘가 re-render가 되는지..
+```
 ## React.FC
 - props의 Type을 Generic으로 넣어서 사용한다.
 ### 장점
