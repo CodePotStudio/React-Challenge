@@ -198,4 +198,94 @@ it('works with promises', () => {
   return user.getUserName(4).then(data => expect(data).toEqual('Mark'));
 });
 ```
-https://jestjs.io/docs/en/tutorial-async#resolves 요기부터 추가하기
+- jest.mock("../request") 콜을 통해 manual mock을 만든다.
+- it의 return value는 resolve될 Promise이어야 한다.
+
+### .resolves
+- resolve를 사용하면 조금 덜 장황하고, 다른 matcher와 함께 promise를 만족할 수 있다.
+- promise가 reject되면 assertion은 fail
+```js
+it('works with resolves', () => {
+  expect.assertions(1);
+  return expect(user.getUserName(5)).resolves.toEqual('Paul');
+});
+```
+### async / await
+- @babel/preset-env 필요
+```js
+// async/await can be used.
+it('works with async/await', async () => {
+  expect.assertions(1);
+  const data = await user.getUserName(4);
+  expect(data).toEqual('Mark');
+});
+
+// async/await can also be used with `.resolves`.
+it('works with async/await and resolves', async () => {
+  expect.assertions(1);
+  await expect(user.getUserName(5)).resolves.toEqual('Paul');
+});
+```
+
+### Error handling
+- catch로 error도 handling할 수 있다.
+```js
+// Testing for async errors using Promise.catch.
+it('tests error with promises', () => {
+  expect.assertions(1);
+  return user.getUserName(2).catch(e =>
+    expect(e).toEqual({
+      error: 'User with 2 not found.',
+    }),
+  );
+});
+
+// Or using async/await.
+it('tests error with async/await', async () => {
+  expect.assertions(1);
+  try {
+    await user.getUserName(1);
+  } catch (e) {
+    expect(e).toEqual({
+      error: 'User with 1 not found.',
+    });
+  }
+});
+```
+
+### rejects
+- rejects는 resolves처럼 동작한다.
+- promise가 만족하면, test는 fail.
+```js
+// Testing for async errors using `.rejects`.
+it('tests error with rejects', () => {
+  expect.assertions(1); //필수는 아니지만, 특정 개수의 assertion이 호출되는 것을 확인하기 위해 추천됨
+  return expect(user.getUserName(3)).rejects.toEqual({
+    error: 'User with 3 not found.',
+  });
+});
+
+// Or using async/await with `.rejects`.
+it('tests error with async/await and rejects', async () => {
+  expect.assertions(1);
+  await expect(user.getUserName(3)).rejects.toEqual({
+    error: 'User with 3 not found.',
+  });
+});
+```
+
+## Manual Mocks
+- Mock data를 사용하여 기능을 대체하는 데에 사용된다.
+- 원격 저장소의 데이터를 실제로 가져오는 대신, 가짜 데이터를 투입할 수 있다.
+
+### Mocking User Modules
+- `__mock__` directory의 하위 directory에 module을 작성하여 정의
+```js
+jest.mock('./moduleName') // call
+```
+
+### Mocking Node Modules
+- Mocking하려는 Module이 Node Module일 경우 `__mock__` directory는 nodee_modules 근처에 두어야 한다.(자동 Mocking)
+- jest.mock('module_name')을 call할 필요가 없음
+
+### 이런 내용들을 알고 싶었던게 아니라 일단 패스..
