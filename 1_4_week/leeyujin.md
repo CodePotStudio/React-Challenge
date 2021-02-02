@@ -74,3 +74,82 @@ function Box({size}) {
 export default Box;
 
 ```
+
+```
+import React from 'react';
+import Button from './Button1';
+import Box from './Box1';
+
+export default function App() {
+    return (
+        <div>
+            <Button size="big" />
+            <Button size="small" />
+            <Box size="big" />
+            <Box size="small" />
+        </div>
+    );
+}
+
+```
+
+- npm start를 이용해서 실행하면 화면에 버튼 두 개와 박스 두 개가 보인다.
+- Button1.css파일에서 small,big 클래스로 정의한 너비가 제대로 적용되지 않은것을 발견할 수 있다.
+- npm run build를 실행해서 build/static/css 폴더 밑에 생성된 CSS파일을 확인해보자.
+
+```
+// 1
+.big {
+    width: 100px;    
+}
+.small {
+    width: 50px;
+}
+
+.button {
+    height : 30px;
+    background-color:#aaa;
+}
+
+// 2
+.big {
+    width: 200px;
+}
+.small {
+    width: 100px;
+}
+.box {
+    height: 50px;
+    background-color:#aaa;
+}
+```
+
+- CSS 클래스명이 같기 때문에 1번 코드는 2번코드로 대체된다.
+
+## CSS-module로 작성하기
+
+- css-module을 사용하면 일반적인 CSS 파일에서 클래스명이 충돌할 수 있는 단점을 극복할 수 있다.
+- css-moduled은 간결한 클래스 명을 이용해서 컴포넌트 단위로 스타일을 적용할 때 좋다.
+- create-react-app에서는 CSS 파일 이름은 다음과 같이 작성하면 css-module이 된다.
+
+{이름}.module.css
+
+```
+import React from 'react';
+import style from './Button2.module.css'; // 1
+
+function Button( { size } ) {
+    if(size === 'big') {
+        return <button className = {`${style.button} ${style.big}`}>큰 버튼 </button> // 2
+    } else {
+        return {
+            <button className = {`${style.button} ${style.small}`}>작은 버튼 </button>
+        }
+    }
+}
+export default Button;
+console.log{style};// 3
+```
+- css-module은 클래스명 정보를 담고 있는 객체를 내보낸다.
+- CSS 파일에서 정의된 클래스명이 style객체의 속성 이름으로 존재한다.
+- style 객체를 출력한 결과는 다음과 같다.
