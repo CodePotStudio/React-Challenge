@@ -153,3 +153,71 @@ console.log{style};// 3
 - css-module은 클래스명 정보를 담고 있는 객체를 내보낸다.
 - CSS 파일에서 정의된 클래스명이 style객체의 속성 이름으로 존재한다.
 - style 객체를 출력한 결과는 다음과 같다.
+
+```
+// css-module로 작성된 CSS파일을 가져온 결과
+{
+    big : 'Button2_big_iAXxH',
+    small: 'Button2_small__1G4lx',
+    button: 'Button2_box_D8Lg-',
+}
+```
+
+```
+
+<style type="text/css">
+.Button2_big__1deZX {
+    width : 100px;
+}
+.Button2_small__1G4lx {
+    width : 50px;
+}
+.button2_button__D8Lg- {
+    height: 30px;
+    background-color: #aaaaaa;
+}
+</style>
+
+```
+- Button2.module.css 파일에서 입력된 내용들이 클래스명만 변경된 채로 들어있습니다.
+- 다른 CSS파일에서 같은 이름의 클래스명을 사용하더라도 이름 충돌은 발생하지 않는다.
+- Button2.js파일에서는 className에 속성값을 입력하는 코드가 번거롭기도 하면서 가독성이 좋지 않다.
+- classnames 패키지를 설정한다.-> npm install classnames
+
+```
+// classnames 사용하기
+// ...
+import sn from 'classnames';
+// ...
+<button className={cn{style.button,style.big}}>큰 버튼 </button>
+//...
+<button className={cn{style.button,style.small}}>작은 버튼 </button>
+//...
+
+```
+
+```
+// css-module로 작성된 box 컴포넌트
+import React from 'react';
+import style from './Box2.module.css';
+import cn from 'classname';
+
+function Box({ size }) {
+    const inBig = size === 'big';
+    const label = isBig ? '큰 박스' : '작은박스';
+    return (
+        <div
+            className={cn{style.box, { {style.big}: isBig, {style.small}: !isBig }}} // 1
+        >
+        {label}
+        </div>
+    );
+}
+export default Box;
+```
+- cn 함수의 인수로 객체를 사용하면 조건부로 클래스명을 입력할 수 있다.
+
+### Sass로 작성하기
+
+- CSS와 비슷하지만 별도의 문법을 이용해서 생산성이 높은 스타일 코드를 작성할 수 있게 도와준다.
+- Sass 문법에 있는 변수, 믹스인(mixin) 등의 개념을 이용하면 스타일 코드를 재사용할 수 있다.
