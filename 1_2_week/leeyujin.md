@@ -1,3 +1,13 @@
+# 리액트 환경 직접 구축해보기
+
+- 1.https://unpkg.com/react-dom@16.14.0/umd/react-dom.development.js
+- 2.https://unpkg.com/react@16.14.0/umd/react.development.js
+- 1 : 개발환경에서 사용하는 파일
+- 2 : 배포 환경에서 사용하는 파일이다.
+- 보통은 `npm install`을 이용해서 리액트를 설치한다. (바벨이나 웹팩을 사용할 경우)
+- `npm install`은 리액트를 이해하는데 방해되므로 이렇게 진행해보는것도 좋다.
+
+
 # 바벨 사용해 보기
 
 - 자바스크립트 코드를 변환해 주는 컴파일러이다. 
