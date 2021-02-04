@@ -7,6 +7,64 @@
 - 보통은 `npm install`을 이용해서 리액트를 설치한다. (바벨이나 웹팩을 사용할 경우)
 - `npm install`은 리액트를 이해하는데 방해되므로 이렇게 진행해보는것도 좋다.
 
+```
+// simple1.html
+
+<html>
+    <body>
+        <h2> 안녕하세요 이 강의가 마음에 드시면 좋아요 버튼을 눌러주세요.</h2>
+        <div id="root"></div>
+        <script src ="react.development.js"></script>
+        <script src ="react-dom.development.js"></script>
+        <script src ="simple1.js"></script>
+    </body>
+</html>
+
+<div>
+    <p>hello</p>
+    <p>world</p>
+</div>
+```
+
+```
+//simple.js
+
+function LikeButton() {
+    const [liked, setLiked] = React.useState(false);
+    // React라는 변수를 사용했다.html에서 스크립트 파일이 실행될 때 
+    // 전역변수로 노출이 된다.
+    // useState(): 컴포넌트의 상태값을 추가할 때 사용함.
+    // 여기서는 LikeButton에 liked라는 상태값을 추가했다.
+    const text = liked ? '좋아요 취소' : '좋아요';
+    // 상태 값에 따라서 보여줄 문구를 지정했다.
+    return React.createElement(
+    // createElement()라는 함수는 리액트 요소를 반환합니다.
+    // UI를 표현하는 작은 단위가 리액트 요소이다.
+        'button',
+        { onClick: () => setLiked(!liked)},
+        text,
+    //children으로 text를 출력한다.
+    );
+}
+const domContainer = document.getElementById('root');
+// div를 렌더링 하기 위한 작업
+// root라는 엘리먼트를 가져온다.
+ReactDOM.render(React.createElement(LikeButton),domContainer);
+// ReactDOM이라는 변수도 마찬가지로 이 스크립트가 실행이 될 때 
+// 전역변수로 노출이 된다.
+// 컴포넌트도 렌더링을 할 때 리액트 요소로 만들어준다.
+// domContainer에 렌더링을 한다.
+
+// hello world ui를 표현하고 싶을 때 createElement로 작성하는 방법
+React.createElement(
+    'div',
+    null,
+    React.createElement('p',null,'hello'),
+    React.createElement('p',null,'world'),
+);
+
+```
+
 
 # 바벨 사용해 보기
 
