@@ -221,3 +221,66 @@ export default Box;
 
 - CSS와 비슷하지만 별도의 문법을 이용해서 생산성이 높은 스타일 코드를 작성할 수 있게 도와준다.
 - Sass 문법에 있는 변수, 믹스인(mixin) 등의 개념을 이용하면 스타일 코드를 재사용할 수 있다.
+
+```
+// Sass로 작성된 스타일 코드
+$sizeNormal : 100px; // 1
+
+.box {
+      width : $sizeNormal; // 2
+      height : 80px;
+}
+
+.button {
+     width : $sizeNormal; // 3
+     height : 50px;
+}
+
+```
+
+- 1 : 일반적인 프로그래밍 언어처럼 변수를 정의할 수 있다.
+- 2~3 : 변수를 사용하면 코드 중복을 없앨 수 있다.
+- Sass 문법으로 작성한 파일은 별도의 빌드 단계를 거쳐서 CSS 파일로 변환된다.
+- create-react-app에서 Sass를 사용하고 싶다면 아래와 같은 패키지를 설치해보자.
+
+```
+npm install node-sass;
+
+```
+- node-sass 패키지는 Sass를 CSS로 빌드할 때 사용한다. 
+- create-react-app에는 Sass를 위한 빌드 시스템이 구축되어 있다.
+- scss 확장자를 가지는 파일을 불러오게 되면 자동으로 Sass 파일이 CSS파일로 컴파일 된다.
+
+```
+// Button3.module.scss
+@import './shared.scss'; // 1
+.big {
+    width : 100px;
+}
+.small {
+    width : 50px;
+}
+.button {
+    height : 30px;
+    background-color:$infoColor; // 2
+}
+```
+- 1: 자바스크립트의 모듈 시스템과 비슷하게 다른 SCSS 파일을 가져올 수 있다.
+- 2: 다른 scss파일에 정의된 변수를 사용할 수 있다.
+
+```
+@import './shared.scss'; // 1
+
+.big {
+    width : 200px;
+}
+.small {
+    width : 100px;
+}
+.box {
+    height : 50px;
+    background-color:$infoColor;
+}
+```
+- 1 : Sass 모듈 시스템 덕분에 스타일 코드를 재사용할 수 있다.
+- npm run build를 실행 후 생성된 CSS 파일을 열어보자. shared.scss 파일의 변수가 .box .button 스타일에 적용된 것을 확인할 수 있다.
