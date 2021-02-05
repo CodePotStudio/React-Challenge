@@ -284,3 +284,69 @@ npm install node-sass;
 ```
 - 1 : Sass 모듈 시스템 덕분에 스타일 코드를 재사용할 수 있다.
 - npm run build를 실행 후 생성된 CSS 파일을 열어보자. shared.scss 파일의 변수가 .box .button 스타일에 적용된 것을 확인할 수 있다.
+
+## css-in-js로 작성하기
+- css-in-js는 리액트의 인기에 힘입어서 비교적 최근에 떠오르고 있는 방법이다.
+- css 코드를 자바스크립트 파일 안에서 작성한다.
+- css 코드가 자바스크립트 안에서 관리가 되기 때문에 공통되는 CSS코드를 변수로 관리할 수 있다.
+- css-in-js를 지원하는 패키지가 많이 나왔고 문법도 다양하다.
+- css-in-js를 지원하는 패키지 중에서 가장 유명한 style-components를 사용해보자.
+
+```
+npm install styled-components
+
+```
+
+```
+import React from 'react';
+import styled from 'stylee-components';
+
+const BoxCommon = styled.div`// 1
+    height: 50px;
+    background-color:#aaaaaa;
+    ;
+const BoxBig = styled{BoxCommon}` // 2
+    width: 200px;
+    ;
+const BoxSmall = styled(BoxCommon)`
+    width: 100px;
+    ;
+
+    function Box{{ size }} {
+        if (size === 'big') {
+            return <BigBig>큰 박스</BigBig>;// 3
+        } else {
+            return <BoxSmall>작은 박스</BoxSmall>;
+        }
+    }
+    export default Box;
+```
+- 1 : 공통 CSS코드를 담고 있는 style-components 컴포넌트를 만들었다.
+- 2 : 클래스 상속처럼 이전에 만든 BoxCommon 컴포넌트를 확장해서 새로운 style-components 컴포넌트를 만들 수 있다.
+- 3 : styled-components 컴포넌트는 일반 적인 리액트 컴포넌트처럼 사용할 수 있다.
+- 여기서 styled-components를 만들 때 사용되는 문법이 생소할 수 있다. 이는 ES6에 추가가 된 태그된 템플릿 리터럴 문법이다.
+- App.js파일에서 Box4.js파일을 가져오도록 수정하고 npm start를 실행하면 의도한 대로 동작하는 것을 확인할 수 있다.
+
+```
+import React from 'react';
+import styled from 'styled-components';
+
+const BoxCommon = styled.div`
+    width: $ {props => {props.inBig ? 200 : 100}}px;// 1
+    height : 50px;
+    background-color: #aaaaaa;
+    ;
+
+    function Box{{ size }} {
+        const inBig = size === 'big';
+        const label = isBig ? '큰 박스' : '작은 박스';
+        return <BoxCommon isBig ={isBig}>{label}</BoxCommon>l// 2
+    }
+export default Box;
+```
+
+- 1 : 템플릿 리터럴에서 표현식을 사용하면 컴포넌트의 속성값을 매개변수로 갖는 함수를 작성할 수 있다. 
+- 또한 동적으로 스타일을 변경하기 때문에 styled-components 컴포넌트는 하나로 충분하다.
+- 2 : isBig 속성값은 styled-components 컴포넌트의 표현식에서 사용된다.
+
+
