@@ -98,3 +98,39 @@ function MyApp() {
 ```
 
 ## Error Handling
+
+비동기 처리중 에러가 날땐 [ErrorBoundary](https://reactjs.org/docs/error-boundaries.html)에서 잡아낼 수 있습니다.
+
+```javascript
+const currentUserNameQuery = selector({
+    key: 'CurrentUserName',
+    get: async ({ get }) => {
+        const res = await myDBQuery({
+            userID: get(currentUserIDState),
+        });
+
+        if (res.error) {
+            throw res.error;
+        }
+
+        return res.name;
+    },
+});
+
+function CurrentUserInfo() {
+    const userName = useRecoilValue(currentUserNameQuery);
+    return <div>{userName}</div>
+}
+
+function MyApp() {
+    return (
+        <RecoilRoot>
+            <ErrorBoundary>
+                <React.Suspense fallback={<div>loading...</div>}>
+                    <CurrentUserInfo />
+                </React.Suspense>
+            </ErrorBoundary>
+        </RecoilRoot>
+    );
+}
+```
