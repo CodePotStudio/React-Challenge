@@ -37,15 +37,16 @@ template 단계에서는 Organisms과 여러 component를 배치하는 단계입
 정해진 template에 데이터와 style을 넣어 완성시키는 단계입니다. url 단위로 routing되는 페이지를 이 단계에서 구성합니다.
 
 ## Folder Tree 만들기
+
 그럼 위 `atomic Design`에 맞추어 `folder`를 구성해보도록 하겠습니다.
 
 ```jsx
-├── components            
+├── components
 │		├── atoms		              # atoms 컴포넌트
 │		│     ├── Button
 │		│     │   ├── index.js
 │		│     │   ├── stories.js
-│		│     ├── Input 
+│		│     ├── Input
 │		│     │   ├── index.js
 │		│     │   ├── stories.js
 │		├── molecules		          # molecules 컴포넌트
@@ -69,11 +70,18 @@ template 단계에서는 Organisms과 여러 component를 배치하는 단계입
 │		│     │   ├── stories.js
 └──pages                     # atomic design을 위한 pages
 		├── MyPage
-      		├── templates
-            	└── index.tsx
+          ├── templates
+              └── index.tsx
 ```
 
 위와 같이 폴더 `tree`를 구성하면 `atomic`하면서도 각 컴포넌트가 겹치지 않게 재사용성을 높일 수 있지 않을까 생각합니다. 게다가 각 컴포넌트 별로 `storybook`을 추가하여 쉽게 각 컴포넌트 단위로 실제 UI를 확인할 수 있게 됩니다.
 
 ## Wrap-Up
+
 `folder tree`의 경우, `React`에서 정해준 표준이 없기 때문에 답은 없습니다. 그렇기 때문에 여러 글들을 읽어보고 자신의 상황에 맞추어 쓰는 것이 최선이라고 생각합니다. 더불에 제가 요즘에 `Design System` 빠져있기 때문에 위와같이 `Atomic Design`을 활용하여 `folder`를 구성해봤습니다. 이외에도 좋은 방법이 있다면 댓글로 언제든 의견 주세요.
+
+## Reference
+
+[https://codeburst.io/atomic-design-with-react-e7aea8152957](https://codeburst.io/atomic-design-with-react-e7aea8152957)
+
+[https://velog.io/@thsoon/쓸때없이-고퀄인-투두리스트-만들기-FE-2.-뷰-설계](https://velog.io/@thsoon/%EC%93%B8%EB%95%8C%EC%97%86%EC%9D%B4-%EA%B3%A0%ED%80%84%EC%9D%B8-%ED%88%AC%EB%91%90%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0-FE-2.-%EB%B7%B0-%EC%84%A4%EA%B3%84)
