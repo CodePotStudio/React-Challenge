@@ -3,7 +3,8 @@
 - Action에 반응하여 State를 변경하기 때문에 React와 잘 어울림
 - Application의 Global State를 더 쉽게 관리, 공유
 - 오직 `하나의 store`만 존재한다.(권장 사항, 하나 이상 존재 가능)
-
+- Component에서 Global State의 특정 값을 의존하게 될 때, 해당 값이 `바뀔 때에만 리렌더링`되도록 최적화가 되어있다.
+- 따라서, global state가 변하지 않을 때에는 추가적인 렌더링이 발행하지 않는다.
 ## Flux 구조
 - client-side web application을 구축할 때 사용하는 아키텍처
 - MVC 구조의 단점을 보완
