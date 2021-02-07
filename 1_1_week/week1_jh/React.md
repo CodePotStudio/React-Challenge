@@ -74,8 +74,30 @@ const callbackFunction = useCallback(()=>{
 - create 함수와 의존성 값 배열 전달시 의존성이 변경되었을 때에 memoization 값 다시 계산
 - 이를 통해 전달된 함수는 `렌더링 중에 실행`된다.
 ```typescript
-const memoizedValue = useMemo(() => computeValue(a,b)
-                  , [a,b]); //없는 경우 렌더링 마다 새 값을 계산
+const memoizedValue = useMemo(() => computeValue(a,b), [a,b]); //없는 경우 렌더링 마다 새 값을 계산
+```
+```js
+//예시
+// List가 일정하다고 가정하면, searchText가 바뀌었을 때에만 다시 해당 function을 호출한다.
+// 이 경우엔 searchText가 바뀌면 아래 셋 다 호출이 된다.
+const searchedList = useMemo(()=>{
+  return list.filter(item => item.value.include(searchText));
+}, [list, searchText]);
+
+//searchText가 바뀌거나, filter의 내용이 바뀌는 경우에 호출 된다.
+//filter의 내용이 바뀐 경우에는 아래 function과 pagingList만 호출이 된다.
+//만약 위 searchedList에서 useMemo를 사용하지 않았을 경우, searchedList는 변경이 필요가 없음에도 변경이 일어난다.
+const sortedList = useMemo(()=>{
+  return searchedList.sort((c, n) =>{
+    return c.value - n.value;
+  });
+}, [searchedList, filter]);
+
+//얘는 무슨 일이 있어도 호출이 되므로 굳이 useMemo()를 사용할 필요는 없어 보인다.
+const pagingList = useMemo(()=>{
+  const offset = (page - 1) * 10;
+  return sortedList.slice(offset).slice(0,10);
+}, [sortedList, page]);
 ```
 
 ### useRef
@@ -201,14 +223,33 @@ function WelcomeDialog() {
 - 이를 통해 불필요한 Re-rendering을 건너뛸 수 있다.
 - Functional Component가 같은 props로 자주 렌더링될 것이라 예상될 때 사용한다.
 - 성능 관련 변경이 잘못 적용된다면, 성능이 오히려 악화될 수 있다.
+- 해당 컴포넌트가 Main 컴포넌트일 때는 사용할 필요가 없어 보인다.
+- 특정 컴포넌트의 한 부분을 차지하는 컴포넌트의 경우, 다른 부분이 re-render되었을 때 re-render가 안되도록 사용을 할 수 있다.
+- 하지만 main 컴포넌트의 경우에는 컴포넌트 내의 한 부분이 변경되는 경우 전체 re-render가 일어나기 때문에 사용할 필요가 없다.
 - 얕은 비교를 하므로 비교 방식을 수정하고 싶다면 아래와 같이
 ```typescript
 React.memo(Component, [areEqual(prevProps, nextProps)]);
 ```
 ### 동작
 1. React.memo()로 Component가 Wrapping되면 렌더링 후 결과를 `Memoizing`
-1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재아용
+1. 이후 다음 Rendering시 `props가 같다면` Memoization된 내용을 재사용
 
+### 의문
+```js
+//App.js
+const App = () =>{
+  ...
+  <AppHeader/> //햄버거메뉴가 존재, 클릭시 사이드 바가 튀어 나옴(기존 화면은 유지하고 덮어씌우는 형식)
+  <Route path={'/compa'} exact component={CompA}/>
+}
+
+//CompA.js
+const CompA = () =>{
+  return <div/>
+}
+export default React.memo(CompA);
+//햄버거 메뉴를 클릭하면 memo에 의해 CompA는 re-render가 안될 것이라고 생각했는데 왜 얘가 re-render가 되는지..
+```
 ## React.FC
 - props의 Type을 Generic으로 넣어서 사용한다.
 ### 장점
