@@ -1,5 +1,4 @@
-# React-Challenge
-## [Code Pot,] React 챌린지 레포지터리
+# [Code Pot,] React 챌린지 레포지터리
 
 ## React 챌린지란?
 React를 주제로 매주마다 한 번씩 정해진 공용 Github에 공부한 내용을 요약하여 PR을 날리고, 인증하는 식으로 스터디를 진행합니다.
