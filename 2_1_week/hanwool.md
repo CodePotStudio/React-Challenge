@@ -8,6 +8,17 @@
 
 ([링크](https://nodejs.org/en/))로 이동하여 왼쪽에 있는 Node.js LTS 버전을 설치합니다.
 
-:::note `React`를 공부하는데 `Node.js`는 왜 설치해야 하나요?
-`javascript`로 작성된 라이브러리를 설치할 때, 사용하는 `NPM`을 사용하기 위함입니다. `NPM`은 `Node.js`가 설치가 되면 자동으로 설치가 됩니다.
-:::
+## 첫 React Project 만들어 보기
+
+`gitbash` 혹은 `terminal`을 실행합니다.
+
+```jsx
+# react 프로젝트 초기하기
+npx create-react-app my-app
+
+# 폴더 이동하기
+cd my-app
+
+# react 실행하기
+npm start
+```
