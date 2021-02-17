@@ -95,7 +95,56 @@ const Member({userId}) => {
 const memoValue = useMemo(() => expensiveFunc(a, b), [a, b]);
 ```
 
-의존성이 변겨오디었을 때에만 메모이제이션된 값을 다시 계산하게된다.
+의존성이 변경되었을 때에만 메모이제이션된 값을 다시 계산하게된다.
+
+명쾌하게 알 수 있는 블로그글을 보았다.
+
+https://leehwarang.github.io/2020/05/02/useMemo&useCallback.html
+
+코드샌드박스 : https://codesandbox.io/s/upbeat-margulis-v8k51?file=/src/Info.js
+
+
+
+## React.memo()
+
+학습하면서 처음본 내용이 있는데, 바로 `React.memo` 이다.
+
+리액트는 컴포넌트를 렌더링한 뒤, 이전 렌더된 결과와 비교하여 DOM 업데이트를 결정한다.
+
+컴포넌트가 `React.momo()` 로 래핑되면, 리액트는 컴포넌트를 렌더링하고 결과를 메모이징한다.
+
+그리고 다음 렌더링이 일어날때 컴포넌트가 넘겨받는 `props` 가 같다면, 메모이징된 컴포넌트를 재사용한다.
+
+```javascript
+export function Book({title, author}) {
+  return (
+  	<>
+    	<h1>Book Title: {title}</h1>
+			<div>Book author: {author}</div>
+    </>
+  )
+}
+
+export const MemoBook = React.memo(Book);
+```
+
+`MemoBook` 는 메모이징된 컴포넌트이다.
+
+즉, `MemoBook` 의 렌더링 결과가 메모이징되어있는 것이다.
+
+`props`로 내려받는 `title` 이나 `author` 가 변경되지 않는다면, 다음 렌더링이 발생할 때 기존 메모이징된 결과를 그대로 사용하게 된다.
+
+```javascript
+// 최초 렌더링.
+// 리액트는 MemoBook 함수를 호출한다.
+<MemoBook title="클린코드" author="로버트 마틴"/>
+
+// 동일한 props로 렌더링할 때, 리액트는 MomoBook 함수를 호출하지 않는다. 
+<MemoBook title="클린코드" author="로버트 마틴"/>
+
+// props가 변경되면 리렌더링한다.
+<MemoBook title="RxJS반응형프로그래밍" author="폴 대니얼스, 루이스 아텐시오"/>
+```
 
 
 
@@ -103,3 +152,12 @@ const memoValue = useMemo(() => expensiveFunc(a, b), [a, b]);
 
 
 
+
+
+## 레퍼런스
+
+https://www.daleseo.com/react-hooks-use-callback/
+
+https://ui.toast.com/weekly-pick/ko_20190731
+
+https://leehwarang.github.io/2020/05/02/useMemo&useCallback.html
