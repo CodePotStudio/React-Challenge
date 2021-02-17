@@ -148,6 +148,71 @@ export const MemoBook = React.memo(Book);
 
 
 
+### React.memo()의 props 비교
+
+`React.memo()` 는 원시 props, 또는 props객체를 비교할 때 shallow하게 비교한다.
+
+
+
+### 함정
+
+`Member` 컴포넌트는 `sayHi` 라는 `콜백 props ` 를 가진다.
+
+```javascript
+function Member({name, onLogout}) {
+  return <button onClick={onLogout}>LOGOUT {name}</button>
+}
+
+const MemoMember = React.memo(Member);
+
+```
+
+메모이제이션을 적용할 땐, 콜백을 받는 컴포넌트 관리에 항상 주의해야한다.
+
+리렌더를 할 때 마다 부모함수가 참조값이 다른 콜백 함수의 인스턴스를 넘길 가능성이 있기 때문이다.
+
+메모리관리를 잘하고 있다고 생각하지만 실은 그렇지 않을 가능성이 있는 것이다.
+
+```javascript
+function MyApp({store, cookies}) {
+  return (
+  	<>
+    	<MemoMember 
+    		name="junwoo" 
+    		onLogout={() => cookies.clear()}
+			/>
+    </>
+  )
+}
+```
+
+같은 `name` props가 전달되더라도, `MemoMember` 는 새로운(참조 주소가 다른) `() => cookies.clear()` 콜백 props를 전달받기때문에 리렌더링이 발생한다.
+
+이러한 문제를 해결하기위해서는 `onLogout` props을 매번 동일한 콜백 인스턴스로 설정해야한다.
+
+이럴때 위에서 공부한 `useCallback` 을 사용할 수 있다.
+
+```javascript
+function MyApp({store, cookies}) {
+  const onLogout = useCallback(() => {
+    cookies.clear();
+  }, [])
+  
+  return (
+  	<>
+    	<MemoMember 
+    		name="junwoo" 
+    		onLogout={onLogout}
+			/>
+    </>
+  )
+}
+```
+
+`useCallback` 을 사용한 `onLogout` 은 항상 같은 함수 인스턴스를 반환한다.
+
+의존성 배열이 없기 때문에 계속 같은 메모이제이션된 함수를 리턴하기 때문이다.
+
 
 
 
