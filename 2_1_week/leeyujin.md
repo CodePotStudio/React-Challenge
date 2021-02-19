@@ -21,7 +21,7 @@
 - 그리고 동적으로 렌더링하는 방법이다.
 
 
-![SPA 참고자료](https://www.excellentwebworld.com/what-is-a-single-page-application)
+[SPA 참고자료](https://www.excellentwebworld.com/what-is-a-single-page-application)
 
 # 기존 어플리케이션과 SPA의 차이
 
