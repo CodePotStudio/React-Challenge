@@ -21,7 +21,6 @@
 - 그리고 동적으로 렌더링하는 방법이다.
 
 
-![SPA 설명](./image/SPA.jpg)
 ![SPA 참고자료](https://www.excellentwebworld.com/what-is-a-single-page-application)
 
 # 기존 어플리케이션과 SPA의 차이
@@ -86,7 +85,6 @@
 
 # Node.js 설치하기
 
-![node 설명](./image/node.png)
 
 - Node.js LTS를 설치합니다.
 ```
@@ -206,7 +204,6 @@ function App() {
  - 이는 `JSX`로 HTML을 작성하면 React 파일을 실행하게 될 떄 `babel`이 자동으로 JSX를 코드를 브라우저가 이해할 수 있는<br> 
 `Javascript 코드로 변환`해준다.
 
-![babel변환](./image/babel.png)
 
 Javascript 함수처럼 생겼는데 이러한 역할을 babel이 합니다.
 
