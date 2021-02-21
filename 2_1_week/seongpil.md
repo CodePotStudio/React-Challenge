@@ -397,6 +397,252 @@ Event 별로 타입을 지정하고 `Generic` 설정을 해줘야 합니다.
 
 [구현 repo](https://github.com/goohooh/todo-react-typescript)
 
+
+# Typescript: Generics
+
+아래와 같은 generics코드는 무슨 뜻인지 헷갈립니다.
+
+```typescript
+function makePair<
+  F extends number | string,
+  S extends boolean | F
+>()
+```
+
+## Let's talk about `makeState()`
+
+제네릭에 익술해질 동안 아래 코드를 사용하곘습니다.
+
+```typescript
+function makeState() {
+  let state: number
+  function getState() {
+    return state
+  }
+  function setState(x: number) {
+    state = x
+  }
+  return { getState, setState }
+}
+```
+
+이 함수는 숫자만을 저장하고 변경할 수 있습니다. 문자열을 다루기 위해서 똑같지만 타입만 다른 함수를 정의해야 합니다.
+
+## Challenge: Two different states
+
+`makeState()`라는 함수는 공유하지만, 각각 생성 이후에는 숫자 혹은 문자열만 다루고 싶습니다.
+
+```typescript
+const numState = makeState()
+numState.setState(1)
+console.log(numState.getState()) // 1
+numState.setState('hey') // error
+
+const strState = makeState()
+strState.setState('foo')
+console.log(strState.getState()) // foo
+strState.setState(9) // error
+```
+
+## Does this work?
+
+```typescript
+function makeState() {
+    let state: number | string
+    function getState() {
+        return state
+    }
+    function setState(x: number | string) {
+        state = x
+    }
+    return { getState, setState }
+}
+
+const numAndStrState = makeState();
+
+numAndStrState.setState(1);
+numAndStrState.setState('hello');
+// no error, but we don't want it
+```
+
+이 함수는 __언제나__ 숫자 혹은 문자열을 받습니다. 우리가 원하는 게 아닙니다.
+
+## Use generics
+
+```typescript
+function makeState<S>() {
+    let state: S
+
+    function getState() { return state }
+
+    function setState(x: S) { state = x }
+
+    return { getState, setState };
+}
+```
+
+`<S>`를 함수 호출시 또 다른 인자값으로 생각하면 쉽습니다. 값이 아니라 __타입__ 입니다.
+
+```typescript
+const numState = makeState<number>();
+numState.setState('foo') // error!
+
+const strState = makeState<string>();
+strState.setState(1) // error!
+```
+
+`makeState<S>()`를 우리는 `generic function` 이라고 부릅니다.
+
+## Problem: You can create a boolena state!
+
+문제가 있습니다. 불리언 타입을 제네릭 함수에 넘기면 불리언을 다룰 수 있게 됩니다. 이또한 우리가 원하는게 아닙니다.
+
+__해결법__
+
+```typescript
+function makeState<S extends string | number>() {
+    // ...
+}
+
+const booleanState = makeState<boolean>(); // error!
+```
+
+## Default type
+
+숫자를 기본형으로 설정하고 싶으면?
+
+```typescript
+function makeState<S extends string | number = number>() {
+    // ...
+}
+```
+
+ES6의 default function parameter 처럼 type을 지정할 수 있습니다.
+
+## Let's talk about `makePair`
+
+```typescript
+// 일단은 숫자를 받게 합니다
+function makePair() {
+    let pair: { first: number; second: number }
+
+    function getPair() { return pair; }
+
+    function setPair(x: number, y: number) {
+        pair = {
+            first: x,
+            second: y
+        }
+    }
+    return { getPair, setPair };
+}
+```
+
+제네릭 함수로 바꿔봅시다.
+
+## Generic `makePair`
+
+```typescript
+function makePair<F, S>() {
+    let pair: { first: F; second: S }
+
+    function getPair() { return pair; }
+
+    function setPair(x: F, y: S) {
+        pair = {
+            first: x,
+            second: y
+        }
+    }
+    return { getPair, setPair };
+}
+
+const { getPair, setPair } = makePair<number, string>();
+
+setPair(1, 'hi');
+```
+
+보시다시피 제네릭 함수에 타입은 여러개를 넘길 수 있습니다.
+
+다음과 같이 응용해 볼 수 있습니다.
+
+```typescript
+function makePair<
+    F extends number | string = number,
+    S extends number | string = number
+>() {}
+```
+
+혹은 두번째 `S` 타입에 첫번째 `F`타입을 넣을 수도 있습니다.
+
+```typescript
+function makePair<
+    F extends number | string,
+    S extends boolean | F
+>() {}
+
+// works
+makePair<number, boolean>();
+makePair<number, number>();
+makePair<string, boolean>();
+makePair<string, string>();
+
+// error!
+makePair<number, string>();
+```
+
+## Generic interfaces and type aliases
+
+`let pair: { first: F, second: S }` 를 리팩토링 해봅시다. __interface__ or __type alias__ 를 이용할 수 있습니다.
+
+### Generic interface
+
+```typescript
+interface Pair<A, B> {
+    first: A
+    second: B
+}
+
+function makePair<F, S>() {
+    let pair: Pair<F, S>
+}
+```
+
+### Generic type alias
+
+```typescript
+type Pair<A, B> = {
+    first: A
+    second: B
+}
+
+function makePair<F, S>() {
+    let pair: Pair<F, S>
+}
+```
+
+사용법은 둘 다 동일합니다.
+
+## Generic classes
+
+makeState를 클래스로 바꿔보겠습니다.
+
+```typescript
+class State<S>() {
+    state: S
+
+    getState() { return state; }
+
+    setState(x: S) { state = x; }
+}
+```
+
+클래스를 사용하기 위해서 생성시 타입 파라미터를 넘겨야 합니다.
+
+```typescript
+const numState = new State<number>();
+```
+
 ---
 
 #### References
