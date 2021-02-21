@@ -11,9 +11,13 @@
       class Plan extends React.Component {
         constructor(props){
           super(props);
+          this.state = {
+             liked: false,
+          };
         }
         render() {
-            return e('button', null, 'Liked')
+            return e('button', {onClick: () => {this.setState({liked: true})}, type: 'submit'}, 
+            this.state.liked === true? 'Like': 'Liked')
         } // <button>Liked</button>
       }
     </script>
