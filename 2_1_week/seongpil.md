@@ -1,4 +1,4 @@
-# Todo App: React with Typescript - 1
+# Todo App: React with Typescript
 
 ## Section 1: Types, Read-only Properties, and Mapped Types
 
@@ -142,6 +142,223 @@ Partial<...>
 ```
 
 ## Section 2: Array Types, Literal Types, and Intersection Types
+
+Todo 앱에 '모두 완료 표시' 기능을 추가하겠습니다.
+
+```typescript
+function completeAll(todos) {
+    // ...
+}
+```
+
+__요구사항__
+
+- `todo` 목록을 받고
+- `done`이 모두 `true`인 목록을 리턴
+
+구현에 들어가기 전에 __실수를 방지하기 위해__ 입출력 타입을 특정지어 봅시다.
+
+### Adding types for `completeAll()`
+
+```typescript
+function completeAll(todos: Todo[]): Todo[] {}
+```
+
+> 처음엔 이걸로 타입정의를 마쳤다고 생각했지만 또하나 __실수할 수 있는 여지가__ 있습니다.
+
+`todo`는 `readonly`로 불변이지만 `array`는 바뀔 수 있습니다.
+
+```typescript
+// Array에서는 mapped type이 아니라 readonly키워드를 사용합니다
+function completeAll(
+    todos: readonly Todo[]
+): Todo[] {}
+
+// Compile error - modifies the array
+todos[0] = { id: 1, text: '...', done: true };
+
+// Compile error - push() modifies the array
+todos.push({ id: 1, text: '...', done: true });
+```
+
+_타입 정의는 아직 끝이 아닙니다_
+
+### The `CompletedTodo` type
+
+```typescript
+type CompletedTodo = Readonly<{
+    id: number
+    text: string
+    done: true /* !! */
+}>
+```
+
+typescript에서 정확한 값을 타입으로 지정할 수 있습니다. 이를 __literal types__ 라고 부릅니다.
+
+```typescript
+const testTodo: CompletedTodo = {
+    id: number
+    text: string
+    done: false
+}
+// 컴파일 실패! Type 'false' is not assignable to type 'true'.
+```
+
+이제 `completeAll()` 타입 정의를 마무리합니다.
+
+```typescript
+function completeAll(
+    todos: readonly Todo[]
+): CompletedTodo[] {
+    // ...
+}
+```
+
+### Intersection types
+
+`Todo`와 `CompletedTodo`에 중복된 코드가 보입니다. 이를 줄이기 위해 `intersection type`을 사용해봅시다.
+
+```typescript
+type A = { a: number }
+type B = { b: string }
+
+// 위아래는 동일한 코드입니다
+type AandB = A & B
+type AandB = {
+    a: number
+    b: string
+}
+```
+
+더 나아가서, 만약 이후에 기입된 타입이 첫번째 타입보다 더 구체적이라면 첫번째 타입을 덮어씁니다.
+
+```typescript
+type A = { foo: boolean }
+type B = { foo: true }
+
+// 위아래는 동일한 코드입니다
+type AandB = A & B
+type AandB = { foo: true }
+```
+
+`CompletedTodo`에 이를 적용해보겠습니다.
+
+```typescript
+type Todo = Readonly<{
+    id: number
+    text: string
+    done: boolean
+}>
+
+type CompletedTodo = Todo & {
+    readonly done: true
+}
+```
+
+### Finally implementing `completeAll()`
+
+```typescript
+function completeAll(
+    todos: readonly Todo[]
+): CompletedTodo[] {
+    return todos.map(todo => ({
+        ...todo,
+        done: true,
+    }))
+}
+```
+
+## Section 3: Union Types and Optional Properties
+
+### New feature: Place tags
+
+- 각 할일 아이템에 __선택적으로__ 아래와 같이 미리 정의된 태그를 추가할 수 있습니다.
+  - `'Home'`
+  - `'Work'`
+- 각 할일 아이템에 유저가 정의한 커스텀 태그도 __선택적으로__ 추가할 수 있습니다.
+  - `{ custom: 'Gym' }`
+  - `{ custom: 'Supermarket' }`
+
+이제 `Todo` 타입에 `Place`라는 키를 추가하고, 여기에 위 타입을 정의해야 합니다.
+
+### Union types
+
+```typescript
+type Foo = number | string
+
+const a: Foo = 1;
+const b: Foo = 'hello'
+```
+
+요구사항 대로 `Place` 타입을 정의해봅시다.
+
+```typescript
+type Place = 'Home' | 'Work' | { custom: string }
+
+type Todo = Readonly<{
+    id: number
+    text: string
+    done: boolean
+    place: Place
+}>
+```
+
+### Optional properties
+
+요구사항을 다시 보면 `place`는 선택사항입니다.
+
+```typescript
+type Todo = Readonly<{
+    // ...
+    place?: Place
+}>
+```
+
+### Implementing `placeToString()`
+
+지겹겠지만 다시 강조하자면, React는 __데이터를 UI로 변환__ 시킵니다.
+
+`Place`데이터를 장소 레이블 UI로 변환해야합니다. 이를 위해 `palceToString()` 함수를 구현해야합니다.
+- 입력값은 `Place` 타입 데이터입니다.
+- 출력값은 __이모지가 포함된 문자열__ 입니다.
+
+```typescript
+function placeToString(place: Place): string {
+  // ...
+}
+```
+
+### Little Duckling's implementation
+
+```typescript
+type Place = 'home' | 'work' | { custom: string }
+
+function placeToString(place: Place): string {
+    if (place === 'home') {
+        return ':home: Home'
+    } else {
+        return ':pin:' + place.custom
+    }
+}
+```
+
+그냥 보면 성공할것 같지만 __실패합니다.__ 컴파일러는 `else`문에서 `place`가 `work | { custom: string }`이란 것을 알고 있습니다. `work`일 경우 `custom` 프로퍼티는 존재하지 않습니다.
+
+```typescript
+function placeToString(place: Place): string {
+    if (place === 'home') {
+        return ':home: Home'
+    } if else (place === 'work') {
+        return ':briefcase: Work'
+    } else {
+        return ':pin:' + place.custom
+    }
+}
+```
+
+`union type`은 조건문에서 특히 큰 힘을 발휘합니다.
+ 
+
 
 ---
 
