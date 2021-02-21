@@ -141,6 +141,15 @@ Partial<...>
 // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
 ```
 
+### Wrap up
+
+타입은 경량화/자동화된 유닛 테스트라고 볼 수 있습니다.
+
+- 타입을 정의함으로써 함수의 입출력 값이 올바른 타입임을 확신할 수 있습니다.
+- `readonly` 키워드를 통해 객체의 속성이 불변임을 확신할 수 있습니다.
+
+서두에 언급한 React의 동작을 기억하시나요? 업데이트가 필요한 데이터와 React라는 함수가 Typescript를 만나 버그를 줄일 수 있습니다.
+
 ## Section 2: Array Types, Literal Types, and Intersection Types
 
 Todo 앱에 '모두 완료 표시' 기능을 추가하겠습니다.
