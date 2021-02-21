@@ -1,4 +1,4 @@
-# Todo App: React with Typescript
+# Todo App: React with Typescript - 1
 
 ## Section 1: Types, Read-only Properties, and Mapped Types
 
@@ -358,10 +358,51 @@ function placeToString(place: Place): string {
 
 `union type`은 조건문에서 특히 큰 힘을 발휘합니다.
  
+# Todo App: React with Typescript - 2
 
+## Config
+
+CRA를 이용해 React 프로젝트를 typescript로 작성하기 위한 설정은 간단합니다.
+
+`npx create-react-app my-app --template typescript`
+
+## Implement
+
+> 구현은 생각보다 간단하지만, Event처리하는 부분이 생소했습니다.
+
+```typescript
+function addTodo(e: React.ChangeEvent<HTMLInputElement>): void {
+    setInputTodo(e.target.value)
+}
+
+function onEnter(e: React.KeyboardEvent<HTMLInputElement>): void {
+    if (e.key === 'Enter') {
+        setTodos(state => {
+        return [
+            ...state,
+            {
+            id: todos.length,
+            text: inputTodo,
+            done: false,
+            }
+        ]
+        });
+
+        setInputTodo('');
+    }
+}
+```
+
+Event 별로 타입을 지정하고 `Generic` 설정을 해줘야 합니다.
+
+[구현 repo](https://github.com/goohooh/todo-react-typescript)
 
 ---
 
-#### Reference
+#### References
 
 https://ts.chibicode.com/todo/
+
+https://github.com/typescript-cheatsheets/react
+
+https://ko.reactjs.org/docs/static-type-checking.html#typescript
