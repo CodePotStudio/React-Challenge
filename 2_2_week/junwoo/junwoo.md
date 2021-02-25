@@ -1,18 +1,14 @@
 # 2주차: [Build your own React](https://pomb.us/build-your-own-react/) 을 학습하며
 
-
-
 ## Step 0: Basic Review
 
 간단한 리액트 코드가 있습니다.
 
 ```jsx
-const element = <h1 title="foo">Hello</h1>;	// 리액트 엘리먼트를 정의한다.
-const container = document.getElementById("root");	// DOM으로부터 노드를 얻는다.
-ReactDOM.render(element, container);	// 컨테이너 안에 리액트 엘리먼트를 생성한다.
+const element = <h1 title="foo">Hello</h1>; // 리액트 엘리먼트를 정의한다.
+const container = document.getElementById("root"); // DOM으로부터 노드를 얻는다.
+ReactDOM.render(element, container); // 컨테이너 안에 리액트 엘리먼트를 생성한다.
 ```
-
-
 
 간단한 3줄의 리액트 코드들을 모두 바닐라 자바스크립트로 교체해봅니다.
 
@@ -28,12 +24,12 @@ const element = <h1>Hello</h1>;
 
 ```javascript
 const element = React.createElement(
-	"h1",
+  "h1",
   {
-		title: "foo"
+    title: "foo",
   },
   "Hello"
-)
+);
 ```
 
 `React.createElement` 함수는 전달받은 아규먼트들로 객체를 생성하게됩니다.
@@ -45,9 +41,9 @@ const element = {
   type: "h1",
   props: {
     title: "foo",
-    children: "Hello"
-  }
-}
+    children: "Hello",
+  },
+};
 ```
 
 `type` 과 `props` 를 객체 키 값으로 가지는 객체가 생성됩니다. (실제로는 더 많은 속성이 있다고 하네요.)
@@ -59,8 +55,8 @@ const element = {
   type: "h1",
   props: {
     title: "foo",
-    children: "Hello"
-  }
+    children: "Hello",
+  },
 };
 const container = document.getElementById("root");
 ReactDOM.render(element, container);
@@ -71,8 +67,8 @@ ReactDOM.render(element, container);
 우선 DOM 엘리먼트를 생성합니다.
 
 ```javascript
-const node = document.createElement(element.type);	// "h1"
-node["title"] = element.props.title;	// "foo"
+const node = document.createElement(element.type); // "h1"
+node["title"] = element.props.title; // "foo"
 ```
 
 그리고 생성한 DOM 엘리먼트의 자식 노드를 생성합니다.
@@ -116,8 +112,6 @@ node.appendChild(text);
 container.appendChild(node);
 ```
 
-
-
 ## Step I: createElement 함수
 
 Step 의 목적은, 나만의 리액트 라이브러리를 만드는겁니다.
@@ -128,8 +122,8 @@ Step 의 목적은, 나만의 리액트 라이브러리를 만드는겁니다.
 
 ```jsx
 const element = (
-	<div id="foo">
-  	<a>bar</a>
+  <div id="foo">
+    <a>bar</a>
     <b />
   </div>
 );
@@ -142,13 +136,13 @@ ReactDOM.render(element, container);
 
 ```javascript
 const element = React.createElement(
-	"div",
+  "div",
   {
-    id: "foo"
+    id: "foo",
   },
   React.createElement("a", null, "bar"),
   React.createElemeent("b")
-)
+);
 ```
 
 `React.createElement` 함수를 들여다봅시다. `type`, `props` 인자를 받아 간단한 객체를 리턴하는 함수일 뿐입니다.
@@ -160,9 +154,9 @@ const createElement = (type, props, ...children) => {
     props: {
       ...props,
       children,
-    }
-  }
-}
+    },
+  };
+};
 ```
 
 `props` 에는 spread operator를 사용 하였습니다.
@@ -171,14 +165,14 @@ const createElement = (type, props, ...children) => {
 
 예를 들어,
 
- `createElement("h1")` 은 다음을 리턴합니다.
+`createElement("h1")` 은 다음을 리턴합니다.
 
 ```javascript
 {
 	"type": "h1",
   "props": {
     "children": []
-  } 
+  }
 }
 ```
 
@@ -212,38 +206,34 @@ const createElement = (type, props, ...children) => {
 ```javascript
 const createTextElement = (text) => {
   return {
-    type: 'TEXT_ELEMENT',
+    type: "TEXT_ELEMENT",
     props: {
       nodeValue: text,
-      children: []
-    }
-  }
-}
+      children: [],
+    },
+  };
+};
 
 const createElement = (type, props, ...children) => {
   return {
     type,
     props: {
       ...props,
-      children: children.map(child => {
-        return typeof child === "object" ? child : createTextElement(child)
-      })
-    }
-  }
-}
+      children: children.map((child) => {
+        return typeof child === "object" ? child : createTextElement(child);
+      }),
+    },
+  };
+};
 ```
-
-
-
-
 
 다시 코드로 돌아와보면..
 
 ```javascript
 const element = React.createElement(
-	"div",
+  "div",
   {
-    id: "foo"
+    id: "foo",
   },
   React.createElement("a", null, "bar"),
   React.createElemeent("b")
@@ -278,8 +268,6 @@ const container = document.getElementById("root");
 ReactDOM.render(element, container);
 ```
 
-
-
 여기서 하나만 더 해봅니다.
 
 `Junwoo.createElement` 를 직접 사용하지 않고, JSX 문법을 그대로 사용하고 싶은 경우에, 바벨에게 리액트의 대신 `Junwoo.createElement` 를 사용하도록 알려줄 수 있습니다.
@@ -304,24 +292,22 @@ ReactDOM.render(element, container);
 
 코멘트를 위와같이 추가하면, 바벨이 JSX를 자바스크립트로 트랜스파일할 때, 우리가 정의한 함수를 사용하도록 지정해줄 수 있습니다.
 
-
-
 ## Step II: render 함수
 
 Step I 의 코드 중, 일부를 가져와보겠습니다.
 
 ```jsx
 const Junwoo = {
-  createElement
+  createElement,
 };
 
 /** @jsx Didact.createElement */
 const element = (
-	<div id="foo">
+  <div id="foo">
     <a>bar</a>
     <b />
   </div>
-)
+);
 const container = document.getElementById("root");
 ReactDOM.render(element, container);
 ```
@@ -335,12 +321,12 @@ const render = (element, container) => {
 
 const Junwoo = {
   createElement,
-  render
+  render,
 };
 
 /** @jsx Didact.createElement */
 const element = (
-	<div id="foo">
+  <div id="foo">
     <a>bar</a>
     <b />
   </div>
@@ -355,8 +341,8 @@ Junwoo.render(element, container);
 
 ```javascript
 const render = (element, container) => {
-	const dom = document.createElement(element.type);
-  
+  const dom = document.createElement(element.type);
+
   container.appendChild(dom);
 };
 ```
@@ -365,10 +351,10 @@ const render = (element, container) => {
 
 ```javascript
 const render = (element, container) => {
-	const dom = document.createElement(element.type);
-  
-  element.props.children.forEach(child => render(child, dom));
-  
+  const dom = document.createElement(element.type);
+
+  element.props.children.forEach((child) => render(child, dom));
+
   container.appendChild(dom);
 };
 ```
@@ -379,11 +365,14 @@ const render = (element, container) => {
 
 ```javascript
 const render = (element, container) => {
-	// const dom = document.createElement(element.type);
-  const dom = element.type === "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(element.type);
-  
-  element.props.children.forEach(child => render(child, dom));
-  
+  // const dom = document.createElement(element.type);
+  const dom =
+    element.type === "TEXT_ELEMENT"
+      ? document.createTextNode("")
+      : document.createElement(element.type);
+
+  element.props.children.forEach((child) => render(child, dom));
+
   container.appendChild(dom);
 };
 ```
@@ -392,17 +381,20 @@ const render = (element, container) => {
 
 ```javascript
 const render = (element, container) => {
-  const dom = element.type === "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(element.type);
-  
-  const isProperty = key => key !== 'children';
+  const dom =
+    element.type === "TEXT_ELEMENT"
+      ? document.createTextNode("")
+      : document.createElement(element.type);
+
+  const isProperty = (key) => key !== "children";
   Object.keys(element.props)
-  	.filter(isProperty)
-  	.forEach(name => {
-    dom[name] = element.props[name]
-  });
-  
-  element.props.children.forEach(child => render(child, dom));
-  
+    .filter(isProperty)
+    .forEach((name) => {
+      dom[name] = element.props[name];
+    });
+
+  element.props.children.forEach((child) => render(child, dom));
+
   container.appendChild(dom);
 };
 ```
@@ -414,12 +406,12 @@ const render = (element, container) => {
 ```jsx
 const createTextElement = (text) => {
   return {
-    type: 'TEXT_ELEMENT',
+    type: "TEXT_ELEMENT",
     props: {
       nodeValue: text,
-      children: []
-    }
-  }
+      children: [],
+    },
+  };
 };
 
 const createElement = (type, props, ...children) => {
@@ -427,51 +419,46 @@ const createElement = (type, props, ...children) => {
     type,
     props: {
       ...props,
-      children: children.map(child => {
-        return typeof child === "object" ? child : createTextElement(child)
-      })
-    }
-  }
+      children: children.map((child) => {
+        return typeof child === "object" ? child : createTextElement(child);
+      }),
+    },
+  };
 };
 
 const render = (element, container) => {
-  const dom = element.type === "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(element.type);
-  
-  const isProperty = key => key !== 'children';
+  const dom =
+    element.type === "TEXT_ELEMENT"
+      ? document.createTextNode("")
+      : document.createElement(element.type);
+
+  const isProperty = (key) => key !== "children";
   Object.keys(element.props)
-  	.filter(isProperty)
-  	.forEach(name => {
-    dom[name] = element.props[name]
-  });
-  
-  element.props.children.forEach(child => render(child, dom));
-  
+    .filter(isProperty)
+    .forEach((name) => {
+      dom[name] = element.props[name];
+    });
+
+  element.props.children.forEach((child) => render(child, dom));
+
   container.appendChild(dom);
 };
 
 const Junwoo = {
   createElement,
-  render
+  render,
 };
 
 /** @jsx Didact.createElement */
 const element = (
-	<div id="foo">
+  <div id="foo">
     <a>bar</a>
     <b />
   </div>
-)
+);
 const container = document.getElementById("root");
 Junwoo.render(element, container);
 ```
-
-
-
-> 음.. 이 다음부터는 동시성을 지원하는 코드인데 아직 제가 이해하기에 많이 벅차네요 =_=,,
-
-
-
-
 
 ## Step III: 동시성 모드(Concurrent Mode)
 
@@ -480,9 +467,9 @@ Junwoo.render(element, container);
 ```javascript
 const render = (element, container) => {
   ...
-  
+
   element.props.children.forEach(child => render(child, dom));
-  
+
   ...
 };
 ```
@@ -493,3 +480,64 @@ const render = (element, container) => {
 
 따라서 작업을 더 작은 단위로 나눈 다음, 각각의 단위마다 브라우저가 어떤 작업이 필요한 경우 렌더링 도중에 끼어들 수 있도록 리팩토링할 것입니다.
 
+> 음.. 이 다음부터는 동시성을 지원하는 코드인데 아직 제가 이해하기에 많이 벅차네요 =\_=,,;
+>
+> 리액트를 더 사용해보고 이해한 후 다시 봐야겠네요;
+
+
+
+---
+
+## [The one thing that no one properly explains about React — Why Virtual DOM](https://hashnode.com/post/the-one-thing-that-no-one-properly-explains-about-react-why-virtual-dom-cisczhfj41bmssp53mvfwmgrq) 을 읽고 학습
+
+
+
+### 브라우저 렌더링 과정
+
+![pic1](./pic1.png)
+
+
+
+#### DOM 트리 생성
+
+브라우저 HTML을 전달받으면, 이를 파싱하고 DOM 노드로 이루어진 트리를 만든다.
+
+#### 렌더 트리 생성
+
+CSS 파일과 각 엘리먼트의 인라인 스타일을 파싱한다.
+
+파싱한 결과를 사용하여 DOM 트리를 따라 새로운 트리, 렌더 트리를 만든다.
+
+즉 각 요소의 스타일이 계산되고, 계산되는 과정에 다른 요소들의 스타일 속성을 참조한다.
+
+#### 레이아웃(리플로우)
+
+렌더 트리가 다 만들어지고 나면, 레이아웃 과정을 거친다.
+
+각 노드들은 스크린 상의 좌표가 주어져서, 정확히 어디에 위치해야하는지 결정된다.
+
+#### 페인팅
+
+렌더링된 요소들에 색을 입히는 과정이다.
+
+트리의 각 노드들을 거쳐가며 paint() 메소드를 호출한다.
+
+그러면 스크린에는 원하는 정보가 나타난다.
+
+
+
+### 가상 DOM
+
+DOM에 변화가 생기면? -> 렌더트리를 재생성한다. -> 즉, 모든 요소들의 스타일이 다시 계산된다. -> 레이아웃을 만든다. -> 페인팅을 한다.
+
+이 부분에서 가상 DOM이 빛을 발하는데, 뷰에 변화가 생기면 실제 DOM에 적용되기 전에, 가상 DOM에 먼저 적용을 시키게된다.
+
+그리고 그 최종적인 결과를 실제 DOM으로 전달해주게되어서, 브라우저 내에서 발생하는 연산의 양을 줄이게 된다.
+
+>DOM 조작의 문제는, 각 조작들이 레이아웃의 변화, 트리의 변화, 렌더링의 발생을 일으킨다는 것이다.
+>
+>예를 들어 30개의 노드를 하나하나 수정한다면, 이 말은 즉 30번의 레이아웃 재계산과 30번의 리렌더링을 뜻하게 된다.
+>
+>가상 DOM은 단순히 모든 변화를 하나로 묶어서 실제 DOM에게 던져준다. 
+>
+>레이아웃 계산과 리렌더링의 규모는 커지겠지만, 연산의 횟수를 줄이게되는 것이다.
