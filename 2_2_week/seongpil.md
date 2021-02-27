@@ -53,6 +53,173 @@ __선언형: GraphQL__
 - 데이터 요구사항을 설명
 - 데이터를 UI에 렌더링
 
+## Batched Resolving (Server)
+
+Query의 Schema 가 정의돼있고 Resolver가 있다면 BFS 방식으로 관계 데이터를 resolve함.
+
+그리고 DB/Server에 요청을 날릴때 resolve와 함께 요청을 날리게 됩니다. 이는 매우 어설픈 방식임
+
+대표적으로 data-loader라는 라이브러리를 통해 일괄처리를 하여 중복 요청을 방지.
+
+## More GraphQL Concept
+
+### Fragment
+
+Fragment는 특정 타입의 필드들의 모음
+
+```typescript
+type User {
+    name: String!
+    age: Int!
+    email: String!
+    street: String!
+    zipcode: String!
+    city: String!
+}
+```
+
+이제 유저의 주소와 관련된 모든 정보를 담은 `fragment`를 표현할 수 있습니다.
+
+```
+fragment addressDetails on User {
+    name
+    street
+    zipcode
+    city
+}
+```
+
+이제 한 유저의 주소 정보에 접근하기위한 쿼리를 쓸 때, 다음과 같은 `fragment`를 참조하는 문법을 사용할 수 있습니다.
+
+```
+{
+    allUsers {
+        ... addressDetails
+    }
+}
+
+// 다음과 같은 쿼리입니다.
+{
+    allUsers {
+        name
+        street
+        zipcode
+        city
+    }
+}
+```
+
+### Named Query Results with Aliases
+
+GraphqQL에서는 여러 쿼리를 한번의 요청에 담아 보낼 수 있습니다. 하지만 응답 데이터는 요청되는 필드 구조에 따라 형성되므로 동일한 필드를 요청하는 여러 쿼리를 보낼때 이름 지정 문제가 발생할 수 있습니다.
+
+```
+{
+    User(id: "1") {
+        name
+    }
+    User(id: "2") {
+        name
+    }
+}
+```
+
+아래와 같이 쿼리 결과의 이름을 지정할 수 있습니다.
+
+```json
+{
+    first: User(id: "1") {
+        name
+    }
+    second: User(id: "2") {
+        name
+    }
+}
+
+// 응답 결과
+{
+    "first": {
+        "name": "Alice"
+    },
+    "second": {
+        "name:": "Sarah"
+    }
+}
+```
+
+### Advanced SDL
+
+#### Object & Scalar Types
+
+GraphQL에는 두가지 다른 타입들이 존재합니다.
+
+- __Scalar__ 스칼라 타입은 데이터의 구체적인 단위를 표현합니다. - `String`, `Int` `Float`, `Boolean`, `ID`
+- __Object__ 오브젝트 타입은 그 타입의 속성을 표현하며 구성가능한 필드타입 입니다. - `User` or `Post`
+
+#### Enums
+
+```
+enum Weekday {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
+}
+```
+
+엄밀히 얘기해서 `enums`는 특펼한 종류의 `scalra` 타입입니다.
+
+#### Interface
+
+```
+interface Node {
+    id: ID!
+}
+
+type User implements Node {
+    id: ID!
+    name: String!
+    age: Int!
+}
+```
+
+#### Union Types
+
+```
+type Adult {
+    name: String!
+    work: String!
+}
+
+type Child {
+    name: STring!
+    school: String!
+}
+
+union Person = Adult | Child
+```
+
+Typescript처럼 생각해서 그냥 보면 문제가 없을 것 같지만... 문제가 생깁니다.
+
+```
+{
+    allPersons {
+        name # works for `Adult` and `Child`
+        ... on Child {
+            school
+        }
+        ... on Adult {
+            work
+        }
+    }
+}
+```
+
+`conditional fragments`를 사용하여 해결할 수 있습니다.
+
 ---
 
 __Reference__
