@@ -220,8 +220,102 @@ Typescript처럼 생각해서 그냥 보면 문제가 없을 것 같지만... �
 
 `conditional fragments`를 사용하여 해결할 수 있습니다.
 
+# React + Apollo Tutorial
+
+> __Project: Catstronaut__
+
+## Server
+
+_Schema-First Design_
+
+### Define the schema
+
+```javascript
+const { gql } = require('apollo-server');
+```
+
+스키마 정의와 같은 GraphQL 문자열을 래핑하는 데 사용되는 태그가 지정된 템플릿 리터럴입니다.
+
+### Run Server
+
+```javascript
+const { ApolloServer, MockList } = require('apollo-server');
+
+const mocks = {
+    Query: () => ({
+        "1~3개가 번갈아가며 리턴됨"
+        tracksForHome: () => new MockList([1, 3]),
+    }),
+    Track: () => ({
+        id: () => 'track_01',
+        title: () => 'Astro Kitty, Space Explorer',
+        author: () => {
+        return {
+            name: 'Grumpy Cat',
+            photo:
+            'https://res.cloudinary.com/dety84pbu/image/upload/v1606816219/kitty-veyron-sm_mctf3c.jpg',
+        };
+        },
+        thumbnail: () =>
+        'https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg',
+        length: () => 1210,
+        modulesCount: () => 6,
+    }),
+};
+
+const server = new ApolloServer({ typeDefs, mocks });
+```
+
+서버 인스턴스 생성시 `mocks`에 임시 데이터를 넣으면, 아직 실제 데이터가 없어도 모킹을 이용해 개발을 할 수 있다.
+
+### Apollo Studio Explorer
+
+쿼리를 테스트할 수 있도록(로컬 서버도 연동 가능) 도와주는 Tool(무료!)
+
+## Client
+
+```
+npm i @apollo/client graphql
+```
+
+```javascript
+const client = new ApolloClient({
+ uri: 'http://localhost:4000',
+ // query 결과를 저장하여 중복 요청을 방지 하거나 store로 사용할 수 있음
+ cache: new InMemoryCache(),
+});
+```
+
+### Wrapping query results
+
+HOC
+
+```jsx
+const QueryResult = ({ loading, error, data, children }) => {
+  if (error) {
+    return <p>ERROR: {error.message}</p>;
+  }
+  if (loading) {
+    return (
+      <SpinnerContainer>
+        <LoadingSpinner data-testid="spinner" size="large" theme="grayscale" />
+      </SpinnerContainer>
+    );
+  }
+  if (!data) {
+    return <p>Nothing to show...</p>;
+  }
+  if (data) {
+    return children;
+  }
+};
+```
+
+
 ---
 
 __Reference__
 
-https://www.howtographql.com/
+https://www.howtographql.com
+
+https://odyssey.apollographql.com
