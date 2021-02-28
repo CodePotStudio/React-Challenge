@@ -170,7 +170,7 @@ export default App;
 
 → 리액트에서는 useRef를 사용 한다.
 
-### React-hook-from 사용하지 않았을때의 로직,
+### React-hook-from 사용하지 않았을때의 로직
 
 Input에 onChagnge= {handleChage} 함수를 만들어서
 
@@ -178,11 +178,13 @@ const [name,setName] = useState("") name이라는 state를 만들어서
 
 const handleChagne = (e) ⇒ {
 
-setName(e.target.value) //업데이트 처리함
+setName(e.target.value) //업데이트 처리한 후 Input에 value로 들어가게 됨.
 
 }
 
-Input에 value로 들어가게 됨.
+
+
+
 
 1. Class Component → React.createRef 
 
@@ -224,4 +226,5 @@ class MyComponent() {
 
 참고
 [https://ko.reactjs.org/docs/hooks-intro.html](https://ko.reactjs.org/docs/hooks-intro.html)
+[https://react-hook-form.com/](https://react-hook-form.com/)
 [https://www.youtube.com/watch?v=tWOn7g_3wKU&list=PL9a7QRYt5fqlnuhU_Zgj2jKu6Ldw6UUCW](https://www.youtube.com/watch?v=tWOn7g_3wKU&list=PL9a7QRYt5fqlnuhU_Zgj2jKu6Ldw6UUCW)
