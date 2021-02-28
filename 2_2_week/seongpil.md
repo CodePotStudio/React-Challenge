@@ -53,6 +53,12 @@ __선언형: GraphQL__
 - 데이터 요구사항을 설명
 - 데이터를 UI에 렌더링
 
+## Client: 뷰와 데이터 종속성을 함께 배치
+
+View단위(Smart Container)는 State/Data에 종속. 
+
+이를 함께 배치하여 개발자의 경험을 향상
+
 ## Batched Resolving (Server)
 
 Query의 Schema 가 정의돼있고 Resolver가 있다면 BFS 방식으로 관계 데이터를 resolve함.
