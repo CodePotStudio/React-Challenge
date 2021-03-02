@@ -1118,5 +1118,5 @@ null === undefined     //false
 
 - 그러므로 특별한 경우가 아니라면 `===`를 쓰는것이 좋다.
 
-[간단한 퀴즈 앱 만들기 과제](https://github.com/leeyj4805/my-app.git ,"github link")<br>
-[타입스크립트 실습 파일](https://www.ooo.com ,"github link")
+[간단한 퀴즈 앱 만들기 과제](https://github.com/leeyj4805/my-app.git)<br>
+[타입스크립트 실습 파일](https://www.ooo.com)
