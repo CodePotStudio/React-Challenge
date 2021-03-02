@@ -1,5 +1,7 @@
 # 3주차 학습
 
+## super란?
+
 Hook 이전의 클래스형 리액트 컴포넌트 코드들을 살펴보다보면 다음과 같은 코드들이 많이 있습니다.
 
 ```javascript
@@ -83,14 +85,155 @@ b ->
 
 홈 객체의 `__proto__` 는 `A.prototype` 이고, `A.prototype` 에서 `x` 를 찾게된다.
 
-
-
- 
-
-
+---
 
 ## Reference
 
 https://v8.dev/blog/fast-super
 
 https://min9nim.github.io/2018/12/super-props/
+
+
+
+---
+
+
+
+## Generator
+
+> 아직 리덕스를 사용해본 적이 없는데요.
+> redux, redux-thunk, redux-saga 등 비슷한 이름이 많더라구요.
+> 이게 다 뭘까? 싶어서 보다가.. 
+> 리덕스 사가에서 제너레이터를 사용하는데 어떻게 사용하는지 몰라서 학습을 하게 되었습니다.
+
+제너레이터를 사용하면 함수를 특정 구간에서 멈춰놓을 수 있고, 또 다시 돌아가게 할 수도 있습니다.
+
+```javascript
+function weirdFunction() {
+  return 1;
+  return 2;
+  return 3;
+}
+```
+
+여러번에 걸쳐서 값을 반환하는 말도 안되는 함수이지만, 제너레이터 함수는 이런식으로 값을 순차적으로 반환할 수 있습니다.
+
+제너레이터 함수를 만들어보겠습니다.
+
+```javascript
+function* generatorFunc() {
+  console.log('제너레이터 00');
+  yield 1;
+  console.log('제너레이터 01');
+  yield 2;
+  console.log('제너레이터 02');
+  yield 3;
+  
+  return 4;
+}
+```
+
+`제너레이터 함수` 를 호출하면, 객체가 반환되는데요. 이 객체를 `제너레이터` 라고 합니다.
+
+```javascript
+const generator = generatorFunc();
+```
+
+제너레이터 객체에는 `next` 메소드가 있는데 이 메소드를 호출해야 코드가 실행되고, `yield` 를 한 값을 반환하고 코드의 흐름이 멈추게 됩니다.
+
+```javascript
+generator.next();
+// 제너레이터 00
+// {value: 1, done: false}
+
+generator.next();
+// 제너레이터 01
+// {value: 2, done: false}
+
+generator.next();
+// 제너레이터 02
+// {value:3, done: false}
+
+generator.next();
+// {value: 4, done: true}
+
+generator.next();
+// {value: undefined, done: true}
+```
+
+
+
+제너레이터 함수에 인자를 넘겨서 함수 내부에서 사용할 수도 있는데요.
+
+```javascript
+function* sumGenerator() {
+  console.log('sum generator 시작');
+  let a = yield;
+  console.log('a값 받았음.');
+  
+  let b = yield;
+  console.log('b값 받았음.');
+  
+  yield a + b;
+}
+
+const sum = sumGenerator();
+
+sum.next();	
+// sum generator 시작
+// {value: undefined, done: false}
+
+sum.next(5);
+// a값 받았음.
+// {value: undefined, done: false}
+
+sum.next(10);
+// b값 받았음.
+// {value: 15, done: false}
+
+sum.next();
+// {value: undefined, done: true}
+```
+
+
+
+### Generator로 액션 모니터링하기
+
+원리를 살펴보면, 타입을 미리 정해놓고 해당 타입에 해당하는 액션을 실행하는 것 같습니다.
+
+```javascript
+function* watchGenerator() {
+  console.log('모니터링 시작');
+  
+  while(true) {
+    const action = yield;
+    if(action.type === 'commit') {
+      console.log('커밋');
+    } 
+    if(action.type === 'dispatch') {
+      console.log('디스패치')
+    }
+  }
+}
+
+const watch = watchGenerator();
+watch.next();
+// 모니터링 시작
+// {value: undefined, done: false}
+
+watch.next({type: 'commit'});
+// 커밋
+// {value: undefined, done: false}
+
+watch.next({type: 'dispatch'});
+// 디스패치
+// {value: undefined, done: false}
+```
+
+
+
+
+
+#### 레퍼런스
+
+https://react.vlpt.us/redux-middleware/10-redux-saga.html
