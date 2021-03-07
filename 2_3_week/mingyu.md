@@ -163,32 +163,6 @@ interrupible
 ## Phase 2 (commit)
 no interruptible
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Reference
 - https://ko.reactjs.org/docs/reconciliation.html
 - https://www.youtube.com/watch?v=ZCuYPiUIONs
