@@ -1,5 +1,5 @@
 ---
-title: React reconciliation & Fiber
+title: React reconciliation & fiber
 author: mingyu.gu
 ---
 
@@ -122,6 +122,74 @@ React는 `<li>Duke</li>`와 `<li>Villanova</li>` 종속 트리를 그대로 유�
 
 인덱스를 key로 사용 중 배열이 재배열되면 컴포넌트의 state와 관련된 문제가 발생할 수 있습니다. 컴포넌트 인스턴스는 key를 기반으로 갱신되고 재사용됩니다. 인덱스를 key로 사용하면, 항목의 순서가 바뀌었을 때 key 또한 바뀔 것입니다. 그 결과로, 컴포넌트의 state가 엉망이 되거나 의도하지 않은 방식으로 바뀔 수도 있습니다.
 
+# React Fiber
+
+React Fiber는 React v16에 포함된 새로운 reconciliation algorithm 입니다.
+
+React's core algorithm을 대부분 갈아엎은 2년 이상의 연구로 만들어진 알고리즘으로 React Fiber의 목표는 animation, layout, gestures와 같은 영역에 대한 rendering을 향상시키는 것 입니다. 
+
+주요 특징은 **incremental rendering**으로 rendering work를 덩어리로 쪼갠 후 여러 프레임에서 적절히 수행시키는 것 입니다.
+
+주요 포인트는 다음과 같습니다.
+- UI에서 모든 업데이트를 즉시 적용할 필요가 없다. 실제로 그렇게 하면 frame drop과 사용자 경험이 저하될 수 있다.
+- 업데이트마다 우선순위가 다르다. 애니메이션은 data update 보다 더 빨리 완료되어야한다.
+
+
+## What is fiber?
+UI를 다룰 때, 너무 많은 작업이 한 번에 실행될 때 문제가 생기기 마련입니다. 이럴 때 animation을 수행하게 되면 frame drop 과 사용자에게 툭툭 끊기게 보여지게 됩니다.
+
+이를 해결하기 위해 작업들에 대해 우선순위를 매기고 `requestIdleCallback`은 유휴 기간 동안 낮은 우선순위 함수를 호출하도록 예약하고 `requestAnimationFrame`은 다음 animation에서 호출할 높은 우선 순위 함수를 예약하면 됩니다.
+하지만 이러한 API를 사용하기 위해서는 **Incremental rendering**이 필요합니다. rendering 과정에는 단 하나의 call stack에만 사용하기에 스택이 비워질 때까지 다른 작업을 수행하지 않기 때문입니다.
+
+UI rendering을 최적화하기 위해 call stack의 동작을 사용자 마음대로 정의할 수 있다면 좋지 않을까요? call stack을 마음대로 중단하고 stack frame을 수동으로 조작할 수 있다면 좋지 않을까요?
+이것이 React Fiber의 목적입니다. Fiber는 React 컴포넌트에 특화된 stack의 재구현으로 **virtual stack frame**으로 생각하면 됩니다.
+
+## Incremental rendering
+- pause work and come back to it later
+- assign priority to different types of work
+- reuse previously completed work
+- abort work if it's no longer needed
+
+Fiber에서는 `requestIdleCallback`을 활용해서 동작중인 React 코드를 매번 부르고, 주어진 시간을 초과한다면 멈추고 더 중요한 일에 양보합니다. 더 중요한 일이 끝나면 다시 돌아와서 나머지 작업을 완료합니다.
+
+어느 시점에서나 작업을 멈출 수 있어야 한다는 것은 task가 잘게 쪼개질 수 있어야 가능해 보입니다. 그리고 이러한 작업이 Incremental task 입니다.
+
+
+# Phases
+
+## Phase 1 (render / reconciliation)
+interrupible
+
+## Phase 2 (commit)
+no interruptible
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Reference
 - https://ko.reactjs.org/docs/reconciliation.html
-- https://simsimjae.tistory.com/473?category=384814
+- https://www.youtube.com/watch?v=ZCuYPiUIONs
+- https://github.com/acdlite/react-fiber-architecture
