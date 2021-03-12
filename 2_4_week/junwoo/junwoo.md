@@ -139,11 +139,108 @@ function counter(state, action) {
 
 
 
+---
+
+>  커리큘럼을 따라, https://react.vlpt.us/redux/05-counter.html 예제를 구현해보았습니다.
+>
+> 단순한 카운터 앱이라 그런지, 막연히 생각했던 복잡하고 러닝커브높은 리덕스의 이미지와는 달리 간결한 모습을 보였습니다. 해보지도 않고 오해를 많이 가지고 있었던 것 같습니다.
+
+
+
+## Recoil
+
+검색하다보니 mobX 말고도 Recoil이라는 상태관리 라이브러리가 있어서 한 번 찾아보았습니다.
+
+Recoil API는 단순하다. 훅스를 사용하고 있다면 익숙할 거라고 한다.
+
+Recoil을 시작하기위해서는 애플리케이션을 `RecoilRoot` 로 감싸고, 데이터를 `atom` 이라는 단위로 선언하여 `useState` 를 Recoil의 `useRecoilState` 로 대체해야 한다.
+
+
+
+### 학습
+
+#### - Atom
+
+atom은 하나의 상태로 이해하면 된다. atom의 값을 변경하면 그것을 구독하고 있는 모든 컴포넌트들이 리렌더링된다.
+
+atom을 생성하기위해서는 애플리케이션의 고유한 키 값과 디폴트 값을 설정해야한다.
+
+```
+export const nameState = atom({
+	key: 'nameState',
+	default: 'junwoo'
+})
+```
+
+#### - useRecoilState
+
+atom값을 구독하여 업데이트할 수 있는 hook이다.
+
+`useState` 와 동일한 방식이다.
+
+<br>
+
+#### - useRecoilValue
+
+atom 값을 리턴한다.
+
+<br>
+
+#### - useSetRecoilState
+
+setter함수를 반환한다.
+
+
+
+사용법을 보면.... 굉장히 직관적이다.
+
+```
+import { nameState } from './example'
+
+// useRecoilState
+const NameInput = () => {
+	const [name, setName] = useRecoilState(nameState);
+	const onChange = event => {
+		setName(event.target.value);
+	}
+	
+	return (
+		<>
+			<input value={name} onChange={onChange} />
+			<div>name : {name}</div>
+		</>
+	)
+}
+
+
+// useRecoilValue
+const NameComponent = () => {
+	const name = useRecoilValue(nameState);
+	
+	return <div>{name}</div>
+}
+
+// useSetRecoilState
+const otherNameComponent = () => {
+	const setName = useSetRecoilState(nameState);
+	return <button onClick={() => setName('junwoo')}>BTN</button>
+}
+```
+
+
+
+
+
+
+
+차주나 차차주에는... 
+간단한 투두앱을 Redux, MobX, Recoil을 사용하여 만들어보는 식으로 학습을 이어나가도 좋을것 같아서 진행하려고 한다.
+
 
 
 ## 레퍼런스
 
 https://react.vlpt.us/redux/02-rules.html
 
-
+https://ui.toast.com/weekly-pick/ko_20200616
 
