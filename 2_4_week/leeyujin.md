@@ -106,7 +106,24 @@ console.log(window.history.length);
 // 현재 페이지를 기준으로 앞,뒤 페이지가 없다면 1이 출력됩니다.
 
 ```
+## React Router의 useHistory hooks
+- React에서는 `history`객체를 사용하기 위해선 window객체에 직접 접근해서 사용하는 방법이 있습니다.
+- 하지만 `React-Router`가 제공하는 `useHistory hook`을 사용합니다.
 
+```jsx
+import { useHistory } from "react-router-dom";
+
+let history = useHistory();
+
+// 특정 페이지 이동 시키기
+history.push("/mypage");
+
+// 뒤로 이동 시키기
+history.goBack();
+
+// 앞으로 이동 시키기
+history.goForward();
+```
 ## 히스토리 추가 및 변경
 
 - HTML5는 히스토리 엔트리를 추가하거나 변경하기 위해 pushState()와 replaceState()라는 메서드를 제공합니다.
