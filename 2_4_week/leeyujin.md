@@ -11,10 +11,55 @@
 - `Router` 컴포넌트는 `Link`,`Route`컴포넌트를 동작하기 위해 반드시 필요한 컴포넌트입니다.
 - `Router`를 상위 컴포넌트로 가지고 있어야 `Route` 컴포넌트가 동작합니다.
 
+```jsx
+
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+
+// Router 컴포넌트 사용 예시
+<Router>
+    <Link to="/">Home</Link>
+    <Link to="mypage">Mypage</Link>
+</Router>
+
+// Router 컴포넌트 사용 예시
+<Router>
+    <Route path="/" component={Home} />
+    <Route path="mypage" component={MyPage} />
+</Router>
+
+```
 ## Route 컴포넌트
 
 - Route 컴포넌트는 정해진 URL로 고객이 접근했을 때 약속된 컴포넌트를 렌더링하는 기능을 제공합니다.
 - `path`에는 컴포넌트를 렌더링할 url을 `component`에는 `path`에 약속된 url로 접근했을 때 렌더링할 컴포넌트를 입력합니다.
+
+```jsx
+
+import React from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
+// Home, MyPage, About 컴포넌트 생성
+const Home = () => <div>Home</div>;
+const MyPage = () => <div>MyPage</div>;
+const About = () => <div>About</div>;
+
+// 각 URL로 보여줄 컴포넌트 매칭
+const App = () => {
+    return (
+        <Router>
+            <Route path="/mypage" component={MyPage} />
+            <Route path="/about" component={About} />
+            <Route path="/" exact component={Home} />
+        </Router>
+    );
+};
+
+export default App;
+
+```
+- `Route`에는 props로 `exact`를 넣어주었는데 이유는 `mypage`,`about`에도 `/`가 포함이 되어있습니다.
+- `Home` 컴포넌트가 렌더링 됩니다. 이 문제를 해결하기 위해서 path가 `/`일 때만 `Home`컴포넌트를 렌더링하도록 옵션을 넣어주었습니다.
+- `localhost:3000/mypage, localhost:3000/about, localhost:3000/`으로 접속하면 확인 가능
 
 ## Link 컴포넌트
 
