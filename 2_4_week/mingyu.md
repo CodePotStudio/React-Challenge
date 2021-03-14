@@ -91,3 +91,8 @@ class ErrorBoundary extends React.Component {
   <MyWidget />
 </ErrorBoundary>
 ```
+
+
+### Reference
+- https://ko.reactjs.org/docs/error-boundaries.html
+- https://ko.reactjs.org/docs/code-splitting.html#reactlazy
