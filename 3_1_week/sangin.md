@@ -31,6 +31,16 @@
 > CSR 의 장점은 초기 로딩 후 페이지 전환이 빠르고 서버에 부담이 적다. 하지만 초기 로딩 속도 및 SEO 에서 불리한 측면이 있다. 
 
 
+## 2. NextJS 핵심 기능
+
+- Server Side Rendering 
+
+- File-based Routing
+ 
+- Build Full Stack React Project (리액트 프로젝트 안에 서버 사이드 API 를 NodeJS 로 구성하여서 통신하기 매우 쉽다)
+
+
+// 237
 
 
 
