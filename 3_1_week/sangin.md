@@ -74,5 +74,5 @@
 ![image](https://user-images.githubusercontent.com/27527229/112694190-460eab00-8ec5-11eb-961e-0846939a6921.png)
 
 
-// 240강 까지 복습 
+// 249강 까지 복습 
 
