@@ -60,6 +60,22 @@
 
 ![image](https://user-images.githubusercontent.com/27527229/112628950-fd300580-8e76-11eb-8bd5-cd9696716578.png)
 
+#### Dynamic Pages 
+
+- 아래와 같이 [newsId].js 로 파일 이름을 설정하면 동적 라우팅이 가능하다. 해당 newsId 부분에 들어가는 부분은 useRouter 를 이용하여 router.query.newsId 형식으로 가져올 수 있다. 
+  즉, localhost:3000/news/3355 이면 router.query.newsId 는 3355 가 되는 것이고 이것을 이용해 서버 통신으로 해당 페이지를 구성할 수 있게 된다. 
+
+![image](https://user-images.githubusercontent.com/27527229/112693613-49556700-8ec4-11eb-9c9b-b2132f29c96f.png)
+
+#### 새로고침 방지 / SPA 형식으로 Next 에서 이동하기 
+
+- 아래와 
+#### 새로고침 방지 / SPA 형식으로 Next 에서 이동하기 같이 
+
+- 아래와 같이 next/link 에 있는 Link 를 이용하여 <Link href="url"> </Link> 으로 하면 새로고침 되지 않고 SPA 방식으로 페이지 이동을 할 수 있다. 
+
+![image](https://user-images.githubusercontent.com/27527229/112694190-460eab00-8ec5-11eb-961e-0846939a6921.png)
+
 
 // 240강 까지 복습 
 
