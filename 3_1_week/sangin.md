@@ -54,7 +54,12 @@
 - Build Full Stack React Project (리액트 프로젝트 안에 서버 사이드 API 를 NodeJS 로 구성하여서 통신하기 매우 쉽다)
 
 
-// 237
+#### File-based Routing
+
+- 아래와 같이 /pages/news/index.js or /pages/news.js 이렇게 파일 구조가 되어있다면 자동으로 localhost:3000/news 가 해당 페이지를 라우팅하게 된다 
+
+![image](https://user-images.githubusercontent.com/27527229/112628950-fd300580-8e76-11eb-8bd5-cd9696716578.png)
 
 
+// 240강 까지 복습 
 
