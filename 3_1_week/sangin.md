@@ -67,9 +67,6 @@
 
 ![image](https://user-images.githubusercontent.com/27527229/112693613-49556700-8ec4-11eb-9c9b-b2132f29c96f.png)
 
-#### 새로고침 방지 / SPA 형식으로 Next 에서 이동하기 
-
-- 아래와 
 #### 새로고침 방지 / SPA 형식으로 Next 에서 이동하기 같이 
 
 - 아래와 같이 next/link 에 있는 Link 를 이용하여 <Link href="url"> </Link> 으로 하면 새로고침 되지 않고 SPA 방식으로 페이지 이동을 할 수 있다. 
