@@ -86,4 +86,4 @@ document.getElementById("input").addEventListener('keyup', handleKeyup)
 ```
 ## 마무리
 Throttling 과 Debouncing 은 성능을 높힐 수 있는 정말 유용한 기법입니다. 예제에서는 autocomplete를 예시로 들었지만 지도 api등에서 사용할 때 매우 높은 성능 향상을 경험할 수 있을 것이라 생각됩니다.
-underscore `_.debounce` 와 `_.throttle` 을 사용하면 쉽게 사용할 수도 있지만 직접 구현해보면서 어떻게 동작하는지 직접 확인해볼 수 있었습니다.
+underscore `_.debounce` 와 `_.throttle` 을 사용하면 쉽게 사용할 수도 있지만 직접 구현해보면서 어떻게 동작하는지 확인해볼 수 있었습니다.
