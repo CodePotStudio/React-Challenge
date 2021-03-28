@@ -141,7 +141,17 @@ class App extends Component {
 ```
 state안에 information 이라는 배열을 만들었고, 그 안에 각각 {id, name, phone} 데이터를 넣었습니다. 그리고 데이터를 추가할 때 setState를 통해서 배열을 업데이트해야하는데, concat을 이용할 수가 있네요. 저렇게 해서 id는 하나씩 증가하고, 데이터를 넣을 수 있도록 했습니다. 
 
-저 `...data`에서 점 세개 있는게 궁금해서 찾아보았는데, 자바스크립트의 spread syntax라는 걸 알게 되었습니다. Spread syntax는 배열안에 있는 것을 각각 개별요소로 사용할 수 있도록 하는 모양입니다. 즉, data안에 있는 요소를 따로따로 떼어서 id와 함께 데이터를 {id, name, phone} 형태로 만들고, information에 추가하기 위해 쓰였습니다. 
+### Spread syntax
+저 `...data`에서 점 세개 있는게 궁금해서 찾아보았는데, 자바스크립트의 spread syntax라는 걸 알게 되었습니다. Spread syntax는 배열안에 있는 것을 각각 개별요소로 사용할 수 있도록 하는 모양입니다. 위에서는 data안에 있는 요소를 따로따로 떼어서 id와 함께 데이터를 {id, name, phone} 형태로 만들고, information에 추가하기 위해 쓰였습니다. 
+```
+var arr = [1, 2, 3];
+//ES5 
+console.log(arr.concat([4, 5, 6])); // [ 1, 2, 3, 4, 5, 6 ]
+// ES6
+console.log([...arr, 4, 5, 6]); // [ 1, 2, 3, 4, 5, 6 ]
+```
+concat으로 두 배열을 합치는 방법 말고도, spread syntax를 이용하면 배열 arr 안에 있는 1,2,3을 해체해서, 4,5,6 원소들과 함께 새 배열을 만들 수 있네요. 
+이렇게 또 ES6에 대해 또 하나 알아갑니다. 
 
 ```
 class PhoneInfoList extends Component {
