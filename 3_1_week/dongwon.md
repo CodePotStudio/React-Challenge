@@ -296,7 +296,7 @@ export default React.memo(AllStores);
 
 #### 코드 설명
 
-- useSelector Hooks를 사용하여 store(리덕스)에 접근, stores와 loading 상태를 저장.
+- useSelector Hooks를 사용하여 store(리덕스)에 접근, stores와 loading 상태를 저장
 
   - state.data.GET_STORES는 loading reducer에서 정의한 data.**GET_STORES: true ( 로딩 중 ) 혹은 data.GET_STORES: flase ( 로딩 끝 ) 정보**
 
