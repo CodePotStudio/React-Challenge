@@ -49,4 +49,16 @@ https://github.com/BearCola/React-Challenge/blob/main/3_1_week/sangin.md
 
 ![스크린샷 2021-04-03 오전 8 22 45](https://user-images.githubusercontent.com/27527229/113461038-df096d00-9455-11eb-88ca-65fa842070e8.png)
 
+- Head 로 meata 데이터 및 title 추가하기 (Search Engine 등에 meta 데이터 및 title 제공)
+
+![스크린샷 2021-04-03 오후 12 10 21](https://user-images.githubusercontent.com/27527229/113466296-9b266000-9475-11eb-834b-c335085aeaef.png)
+
+![스크린샷 2021-04-03 오후 12 13 15](https://user-images.githubusercontent.com/27527229/113466338-fd7f6080-9475-11eb-9d35-64bb85e03d20.png)
+
+- Props 에서 데이터를 가져와서 동적으로 Meta 데이터 구성 
+
+![스크린샷 2021-04-03 오후 12 13 49](https://user-images.githubusercontent.com/27527229/113466352-12f48a80-9476-11eb-96b3-1d304a513877.png)
+
+
+
   
