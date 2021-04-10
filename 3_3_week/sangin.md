@@ -3,7 +3,6 @@
 참고 사이트
 - https://aws.amazon.com/ko/blogs/compute/building-server-side-rendering-for-react-in-aws-lambda/
 = https://github.com/aws-samples/react-ssr-lambda (데모)
-- https://medium.com/medwing-engineering-product-design/using-lambda-edge-for-server-side-rendering-318d9422d76b
 - https://seoyeonhwng.medium.com/aws-lambda%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80-44df535d5487
 
 
@@ -47,8 +46,78 @@
 ![image](https://user-images.githubusercontent.com/27527229/114284912-38911d80-9a8e-11eb-9175-8f8f2070ce41.png)
 
 
+- SSR Logic in Lambda
+
+```typescript
+const handler = async function (event) {
+  try {
+    const url = config.SSRApiStack.apiurl;
+    const result = await axios.get(url);
+    const app = ReactDOMServer.renderToString(<SSRApp data={result.data} />);
+    const html = indexFile.replace(
+      '<div id="root"></div>',
+      `<div id="root">${app}</div>`
+    );
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "text/html" },
+      body: html,
+    };
+  } catch (error) {
+    console.log(`Error ${error.message}`);
+    return `Error ${error}`;
+  }
+};
+
+```
+
+- SSR Logic in Lambda@Edge
+
+```typescript
+const handler = async function (event) {
+  try {
+    const request = event.Records[0].cf.request;
+    if (request.uri === "/edgessr") {
+      const url = config.SSRApiStack.apiurl;
+      const result = await axios.get(url);
+      const app = ReactDOMServer.renderToString(<SSRApp data={result.data} />);
+      const html = indexFile.replace(
+        '<div id="root"></div>',
+        `<div id="root">${app}</div>`
+      );
+      return {
+        status: "200",
+        statusDescription: "OK",
+        headers: {
+          "cache-control": [
+            {
+              key: "Cache-Control",
+              value: "max-age=100",
+            },
+          ],
+          "content-type": [
+            {
+              key: "Content-Type",
+              value: "text/html",
+            },
+          ],
+        },
+        body: html,
+      };
+    } else {
+      return request;
+    }
+  } catch (error) {
+    console.log(`Error ${error.message}`);
+    return `Error ${error}`;
+  }
+};
+```
+
 
 ### AWS Lambda@Edge 예시
+
+- https://medium.com/medwing-engineering-product-design/using-lambda-edge-for-server-side-rendering-318d9422d76b
 
 ![image](https://user-images.githubusercontent.com/27527229/114284384-768c4280-9a8a-11eb-8d26-8e8095c0bd2f.png)
 
