@@ -85,3 +85,131 @@ function App() {
 }
 ```
 > `styled-component`의 `css`를 사용하면 여러 줄의 CSS 코드를 조건부로 사용할 수 있습니다. 이를 확장하면 스타일 선언 시 사용한 `props`를 사용한 속성 내부에서도 `props`값을 사용할 수 있습니다.
+
+# 2. API 연동
+웹 어플리케이션을 사용하는 모든 사용자가 데이터를 조회하고 사용할 수 있도록 하기 위해서는 서버쪽에 데이터를 저장한 후 서버 API에 연동하여 저장된 데이터를 사용하는 방식으로 진행됩니다. 이를 위해 Redux 라이브러리를 사용할 수 있지만 비동기 처리와 `axios` 라이브러리를 사용해 React만으로도 API 연동을 수행할 수 있습니다. 
+API 연동 간에는 다음과 같은 데이터의 상태를 관리할 수 있습니다.
+
+&lt;API 연동 후 데이터에 대한 상태 관리&gt;
+- 로딩
+- 요청 결과(데이터)
+- 에러
+
+## 2-1. `axios` 라이브러리
+`axios` 라이브러리를 사용해 GET, PUT, POST, DELETE 등의 메서드를 사용해 데이터 조회, 등록, 수정, 제거 등을 수행할 수  있습니다. 
+
+### `axios` 라이브러리 설치
+```
+$ npm add axios
+```
+### `axios` 라이브러리 사용법
+```
+// 원하는 동작을 수행할 메소드 지정
+axios.get('Fetch할 데이터의 API 주소');
+```
+
+## 2-2. Hooks를 통한 API 연동
+`useState`와 `useReducer`를 통해 API 연동에 대한 데이터에 대한 상태를 `state`로 관리할 수 있습니다.
+
+### `useReducer`를 통한 API 연동
+```
+function reducer(state, action) {
+  switch (action.type) {
+    case 'LOADING':
+      return { loading: true, data: null, error: null };
+    case 'SUCCESS':
+      return { loading: false, data: action.data, error: null };
+    case 'ERROR':
+      return { loading: false, data: null, error: action.error };
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+}
+
+function Users() {
+  // 로딩, 요청 결과, 에러 상태를 state로 관리
+  const [state, dispatch] = useReducer(reducer, {
+    loading: false,
+    data: null,
+    error: null
+  });
+
+  const fetchUsers = async () => {
+    dispatch({ type: 'LOADING' });
+    try {
+      // axios 라이브러리를 통한 데이터 조회 (비동기 처리)
+      const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+      dispatch({ type: 'SUCCESS', data: response.data });
+    } catch (e) {
+      dispatch({ type: 'ERROR', error: e });
+    }
+  };
+
+  useEffect(() => { fetchUsers(); }, []);
+} 
+```
+## 2-3. `react-async` 라이브러리를 통한 API 연동
+`react-async` 라이브러리는 데이터 요청에 대한 모든 상태를 손쉽게 처리할 수 있도록 지원해주는 라이브러리입니다. `react-async` 라이브러리를 사용하면 데이터 상태뿐 아니라 데이터 요청함수도 재사용할 수 있습니다. 
+
+### `react-async` 라이브러리 설치
+```
+$ npm add react-async
+```
+### `react-async` 사용법 (`useAsync`)
+```
+const MyComponent = () => {
+  
+  // useAsync({ promiseFn: API 호출 실행 함수, [params: API 호출 함수 실행간 사용할 파라미터, option: API 호출 함수 실행에 적용할 옵션... ] })
+  // return { data: fetch한 데이터 / error: 에러 / isPending: 로딩 / run: 데이터 요청함수 }
+  
+  const { data, error, isPending, run } = useAsync({ promiseFn: getUser, id });
+}
+```
+### `react-async` 라이브러리를 통한 데이터 요청
+```
+import { useAsync } from 'react-async';
+
+// Promise를 반환하는 함수의 파라미터를 객체 형태로 설정
+async function getUser({ id }) {
+  const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
+
+  return response.data;
+}
+
+function User({ id }) {
+  const { data, error, isLoading, run } = useAsync({ promiseFn: getUsers, id, watch:id });
+}
+```
+
+## 2-4. Context를 통한 상태 관리
+API 연동을 통해 가져온 특정한 데이터를 하나의 컴포넌트가 아닌 여러 컴포넌트가 사용해야 하는 경우에는 Context를 사용할 수 있습니다. 
+
+### Context를 사용해 데이터 상태 관리 전달
+Fetch한 특정 데이터의 상태를 `useReducer`를 통해 `state`와 `dispatch`로 관리한 후, Context를 통해 `state`와 `dispatch`를 컴포넌트에 전달하면 특정 컴포넌트는 전달된 Context값을 `useContext`를 통해 사용할 수 있습니다.
+위 과정을 통해 여러 컴포넌트가 공동으로 사용할 수 있는 데이터 상태 관리 컴포넌트를 따로 구성할 수 있습니다.
+
+```
+const UsersStateContext = createContext(null);
+const UsersDispatchContext = createContext(null);
+
+export function UsersProvider({ children }) {
+  const [state, dispatch] = useReducer(usersReducer, initialState);
+
+  return (
+    <UsersStateContext.Provider value={state}>
+      <UsersDispatchContext.Provider value={dispatch}>
+        {children}
+      </UsersDispatchContext.Provider>
+    </UsersStateContext.Provider>
+  );
+}
+export async function getUsers(dispatch) {
+  dispatch({ type: 'GET_USERS' });
+  try {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+    dispatch({ type: 'GET_USERS_SUCCESS', data: response.data });
+  } catch (e) {
+    dispatch({ type: 'GET_USERS_ERROR', error: e });
+  }
+}
+```
