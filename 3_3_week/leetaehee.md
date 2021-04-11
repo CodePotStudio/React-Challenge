@@ -213,3 +213,89 @@ export async function getUsers(dispatch) {
   }
 }
 ```
+
+# 3. React Router
+전통적인 방식의 웹 페이지 렌더링은 서버 사이드 렌더링(SSR) 기법을 사용합니다. 서버 사이드 렌더링이란 렌더링할 웹페이지를 지정하는 기법인 라우트를 서버에서 수행하는 작업입니다. 따라서 페이지를 이동할 때마다 서버에 새로운 페이지에 대한 정보를 요청합니다. 하지만 서버 사이드 렌더링은 사용자와 인터랙션이 많은 웹 어플리케이션에는 부적합할 수 있습니다. 이러한 문제를 해결하기 위해 클라이언트 사이드 렌더링(CSR) 기법이 탄생하였습니다. 클라이언트 사이드 렌더링 기법은 서버에서 1개의 메인 페이지를 불러오는 싱글 페이지 어플리케이션(SPA)을 통해 수행될 수 있습니다. 싱글 페이지 어플리케이션은 서버에서 렌더링에 필요한 부분만 호출하기 때문에 서버 자원 사용량을 줄이고 신속한 인터랙션을 기대할 수 있습니다. React에서는 이러한 장점을 가진 싱글 페이지 어플리케이션을 제작하기 위해 `react-router` 라이브러리를 사용합니다.
+
+## 3-1. `react-router` 라이브러리
+`react-router`는 써드파티 라이브러리로 공식적으로 제작된 라이브러리는 아니지만 클라이언트에서 라우팅을 원활하게 수행하기 위해 사용합니다. 
+
+### `react-router` 설치
+```
+$ npm add react-router-dom
+```
+
+### `react-router` 사용하기
+라우팅을 적용하기 위해서 `BrowserRouter` 컴포넌트를 사용하고 주소에 대해 렌더링할 컴포넌트를 지정하기 위해 `Route` 컴포넌트를 사용합니다. 또한 특정 페이지로 이동하기 위한 링크를 위해 `Link` 컴포넌트를 사용합니다.
+
+&lt;index.js&gt;
+```
+import { BrowserRouter } from 'react-router-dom';
+
+ReactDOM.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById('root')
+);
+```
+
+&lt;App.js&gt;
+```
+import { Route } from 'react-router-dom';
+
+function App(){
+  return (
+    <div>
+      <ul>
+        <li><Link to="/">홈</Link></li>
+      </ul>
+      <Route path="/" component={Home} exact/>
+      <Route path="/about" component={About} />
+    </div>
+  );
+};
+```
+
+### 파라미터와 쿼리 사용하기
+
+#### 파라미터
+
+URL의 파라미터값을 가져오기 위해서는 `match` props의 `params`를 사용합니다. 
+
+```
+function Profile({ match }){
+  const { username } = match.params;
+  const profile = profileData[username];
+}
+```
+
+#### 쿼리
+
+URL의 쿼리값을 가져오기 위해서는 `location` props의 `search`를 사용합니다. (쿼리문 파싱을 위해 `qs` 라이브러리를 사용할 수 있습니다.)
+
+```
+import qs from 'qs';
+
+function About({ location }){
+  const query = qs.parse(location.search, {
+    ignoreQueryPrefix: true // 쿼리문의 '?' 무시
+  });
+}
+```
+### 서브라우팅
+서브라우팅은 라우트의 하위 라우트를 만드는 기법입니다. 서브라우팅은 라우팅할 컴포넌트 내에서 Route 컴포넌트를 렌더링함으로써 수행할 수 있습니다.
+
+```
+function Profiles(){
+  return (
+      <Route
+        path="/profiles"
+        exact
+        render={() => <div>유저 선택</div>} // /profiles 라우팅
+      />
+      <Route path="/profiles/:username" component={Profile} /> // /profiles/1234 라우팅
+    </div>
+  );
+};
+```
