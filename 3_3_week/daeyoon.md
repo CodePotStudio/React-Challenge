@@ -76,7 +76,7 @@ React 16.8에 추가되어 Class형 컴포넌트 보다 Hook의 장점이 많아
         );
     }
     const news1 = {title: '비트코인 심상치 않아..', content: '비트코인 1억 향해'}
-    const news2 = {title: '이더리움 무슨일인가?', content: '비트코인 1천만원 돌파'}
+    const news2 = {title: '이더리움 무슨일인가?', content: '이더리움 1천만원 돌파'}
     const loadNews = (newsId) => {
         return new Promise(response => {
             setTimeout(() => {
