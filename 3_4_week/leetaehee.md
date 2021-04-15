@@ -122,7 +122,7 @@ export default function counter(state = initialState, action) {
 ```
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import counter from './counter';
+import rootReducer from './modules';
 
 // store와 reducer 연결
 const store = createStore(rootReducer);
@@ -177,3 +177,53 @@ function CounterContainer() {
 }
 export default CounterContainer;
 ```
+
+# 2. Redux 미들웨어
+Redux 미들웨어는 Action을 Dispatch한 후 Reducer에서 해당 Action 객체의 타입과 맞는 동작을 수행하기 이전에 추가적인 작업을 할 수 있도록 하는 기능입니다. 미들웨어를 사용하면 Reducer 동작에 필요한 외부 API를 연동하거나 비동기 작업 등을 처리할 수 있습니다. 
+
+## 2-1. Redux 미들웨어 사용 및 적용하기
+Redux 미들웨어는 다음과 같은 형식으로 사용할 수 있습니다.
+
+&lt;middleware.js&gt;
+```
+const middleware = store => next => action => {
+  // 미들웨어 동작(Reducer 수행 이전)
+
+  const result = next(action); // 다음 미들웨어나 Reducer에 액션 전달
+
+  // 미들웨어 동작(Reducer 수행 이후)
+
+  return result; // Reducer 수행 후의 결과 return
+}
+```
+
+생성한 미들웨어는 Store에 `applyMiddleware` 함수를 사용하여  적용할 수 있습니다.
+
+&lt;index.js&gt;
+```
+import { createStore, applyMiddleware } from 'redux';
+import middleware from "./middleware"
+import rootReducer from './modules';
+
+const store = createStore(rootReducer, applyMiddleware(middleware));
+```
+
+## 2-2. redux-thunk
+redux-thunk는 Redux에서 비동기 작업을 처리하기 위해 사용하는 미들웨어의 한 종류입니다. redux-thunk를 사용하면 Redux 모듈의 Action 객체가 아닌 Action 함수를 dispatch할 수 있습니다. Action 함수를 dispatch 할 때는 `dispatch`와 `getState` 를 파라미터로 받아 사용할 수 있습니다.
+
+```
+const getComments = () => async (dispatch, getState) => {
+  const id = getState().id; // 현재 state 조회
+
+  // dispatch를 통해 수행할 동작 명시
+  dispatch({ type: 'GET_COMMENTS' }); // Comments loading
+  try {
+    const comments = await api.getComments(id);
+    dispatch({ type:  'GET_COMMENTS_SUCCESS', id, comments }); // Comments Fetch
+  } 
+  catch (e) {
+    dispatch({ type:  'GET_COMMENTS_ERROR', error: e }); // Comments Error
+  }
+}
+```
+
