@@ -15,7 +15,7 @@
     
 3. ### JSX 란? 
  
-    *JSX* 는 XML과 같은 문법 익스텐션을 ECMAScript로 변환해주는 편리한 문법입니다. 기본적으로 리액트의 `React.createElement()` 호출을 쉽게 HTML과 같이 사용할 수 있게 합니다., 
+    *JSX* 는 XML과 같은 문법 익스텐션을 ECMAScript로 변환해주는 편리한 문법입니다. 기본적으로 리액트의 `React.createElement()` 호출을 쉽게 HTML과 같이 사용할 수 있게 합니다.
     아래는 h1 태그를 jsx 로 만든 예시이고 HTML 과 매우 유사하다는 것을 알 수 있습니다. 
 
     ```jsx harmony
@@ -30,11 +30,11 @@
     }
     ```
     
-4. ### What is the difference between Element and Component?
+4. ### Element 와 Component 의 차이점은? 
 
-    An *Element* is a plain object describing what you want to appear on the screen in terms of the DOM nodes or other components. *Elements* can contain other *Elements* in their props. Creating a React element is cheap. Once an element is created, it is never mutated.
+    *Element* 는 Plain Object 로 DOM 노드나 다른 컴포넌트에 어떤 걸 그리고 싶은지를 나타냅니다. *Elements* 는 다른 *Elements* 를 하위에 가질 수 있습니다. 리액트 Element 는 비용이 많이 들지 않는     동작이며 만들어진 후에는 변경되지 않습니다. 
 
-    The object representation of React Element would be as follows:
+    Element 는 아래와 같이 사용됩니다. 
 
     ```javascript
     const element = React.createElement(
@@ -44,7 +44,7 @@
     )
     ```
 
-    The above `React.createElement()` function returns an object:
+    그리고 createElement 는 아래와 같이 구성된 Object 를 반환합니다. 
 
     ```
     {
@@ -56,13 +56,13 @@
     }
     ```
 
-    And finally it renders to the DOM using `ReactDOM.render()`:
+    그 이후에 아래와 같이 ReactDOM.render() 를 이용하여서 DOM 에 렌더링되게 됩니다.     
 
     ```html
     <div id='login-btn'>Login</div>
     ```
-
-    Whereas a **component** can be declared in several different ways. It can be a class with a `render()` method. Alternatively, in simple cases, it can be defined as a function. In either case, it takes props as an input, and returns a JSX tree as the output:
+    
+    반면 **component** 는 몇가지 다른 방식으로 선언될 수 있습니다. Class 의 render() 또는 Function 으로 정의할 수 있으며 props 받아서 JSX 를 구성하여 반환하게 됩니다. 
 
     ```javascript
     const Button = ({ onLogin }) =>
@@ -70,6 +70,7 @@
     ```
 
     Then JSX gets transpiled to a `React.createElement()` function tree:
+    JSX 는 아래와 같이 `React.createElement()` 로 트랜스컴파일 되어 사용됩니다. 
 
     ```javascript
     const Button = ({ onLogin }) => React.createElement(
@@ -79,8 +80,6 @@
     )
     ```
 
-
-   **[⬆ Back to Top](#table-of-contents)**
     
 5. ### How to create components in React?
 
