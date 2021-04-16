@@ -13,11 +13,10 @@
     * 단방향의 데이터 흐름을 가지고 있습니다. 
     * 재사용 가능한 UI 컴포넌트를 쉽게 만들 수 있습니다. 
     
-3. ### What is JSX?
-
-    *JSX* is a XML-like syntax extension to ECMAScript (the acronym stands for *JavaScript XML*). Basically it just provides syntactic sugar for the `React.createElement()` function, giving us expressiveness of JavaScript along with HTML like template syntax.
-
-    In the example below text inside `<h1>` tag is returned as JavaScript function to the render function.
+3. ### JSX 란? 
+ 
+    *JSX* 는 XML과 같은 문법 익스텐션을 ECMAScript로 변환해주는 편리한 문법입니다. 기본적으로 리액트의 `React.createElement()` 호출을 쉽게 HTML과 같이 사용할 수 있게 합니다., 
+    아래는 h1 태그를 jsx 로 만든 예시이고 HTML 과 매우 유사하다는 것을 알 수 있습니다. 
 
     ```jsx harmony
     class App extends React.Component {
@@ -30,9 +29,6 @@
       }
     }
     ```
-
-
-   **[⬆ Back to Top](#table-of-contents)**
     
 4. ### What is the difference between Element and Component?
 
