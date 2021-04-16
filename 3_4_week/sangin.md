@@ -1,4 +1,4 @@
-# 리액트를 복습하기에 https://github.com/sudheerj/reactjs-interview-questions 여기가 괜찮은거 같아서 번역 겸 정리하려고 합니다 ~ (원문은 저기서 확인하시면 됩니다 2021-04-27 기준)
+# 리액트를 복습하기에 https://github.com/sudheerj/reactjs-interview-questions 여기가 괜찮은거 같아서 번역 겸 정리하려고 합니다 ~ (원문은 저기서 확인하시면 됩니다 2021-04-17 기준)
 
 
 1. ### 리액트는 무엇인가요? 
@@ -104,5 +104,43 @@
         }
         ```
 
+6. ### Class 컴포넌트는 어떤 경우에 사용하는가? 
+
+    이전에는 라이프 사이클 메소드 활용이 필요하거나 State 를 처리할 때에는 Class 를 사용하였는데 최근에는 Hooks 가 추가되면서 사용할 일이 거의 없다. Error Boundary 정도가 Hooks 로 아직 구현 안 된 예인     것 같다. 
+
+7. ### Pure 컴포넌트는 무엇인가? 
+ 
+    *`React.PureComponent`* 는 *`React.Component`* 와 `shouldComponentUpdate()`을 제외하고는 같은 컴포넌트입니다. Props 와 State 가 바뀔 때 *PureComponent* 는 얕은 비교를 해서 변경되       었을 때에만 re-render 가 되게 됩니다. 
+
+8. ### 리액트에서 State 란 무엇인가요? 
+
+    *State* 는 컴포넌트가 지속되는 동안 변할 수 있는 값을 가지고 있는 Object 를 의미합니다. 항상 더 단순하고 적은 수의 State 를 가질 수 있도록 노력하는 것이 좋습니다. 
+    
+    아래와 같이 User 의 message state 를 구성할 수 있습니다. 
+
+
+    ```jsx harmony
+    class User extends React.Component {
+      constructor(props) {
+        super(props)
+
+        this.state = {
+          message: 'Welcome to React world'
+        }
+      }
+
+      render() {
+        return (
+          <div>
+            <h1>{this.state.message}</h1>
+          </div>
+        )
+      }
+    }
+    ```
+
+    ![image](https://user-images.githubusercontent.com/27527229/115093604-e0f32600-9f55-11eb-8e59-7a50214874eb.png)
+    
+    State 는 Props 와 유사하지만 컴포넌트 내부에서 제어된다는 점이 다릅니다. 그래서 다른 컴포넌트에서 이 State dㅔ 접근할 수 없습니다. 
 
 
