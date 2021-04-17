@@ -1,4 +1,4 @@
-# 리액트를 복습하기에 https://github.com/sudheerj/reactjs-interview-questions 여기가 괜찮은거 같아서 번역 겸 정리하려고 합니다 ~ (원문은 저기서 확인하시면 됩니다 2021-04-17 기준)
+# 리액트를 복습하기에 https://github.com/sudheerj/reactjs-interview-questions 여기가 괜찮은거 같아서 번역 겸 정리하려고 합니다 ~ (원문은 저기서 확인하시면 됩니다 2021-04-17 기준 329개 있네요)
 
 
 1. ### 리액트는 무엇인가요? 
@@ -142,5 +142,35 @@
     ![image](https://user-images.githubusercontent.com/27527229/115093604-e0f32600-9f55-11eb-8e59-7a50214874eb.png)
     
     State 는 Props 와 유사하지만 컴포넌트 내부에서 제어된다는 점이 다릅니다. 그래서 다른 컴포넌트에서 이 State dㅔ 접근할 수 없습니다. 
+    
 
+9. ### 리액트에서 Props 란? 
+
+    *Props* 는 Components 의 Input 값 입니다. HTML-tag 속성처럼 단일 값이나 Object 로 컴포넌트에 전달됩니다. 보통 부모 컴포넌트에서 자식 컴포넌트로 Props 가 전달합니다. 
+    
+    Props 를 사용하는 주요 목적은 아래와 같습니다. 
+
+    1. Custom 데이터 전달 
+    2. State 변화를 유발
+    3.  `render()`  안에서 `this.props.reactProp` 를 사용 
+    
+    예를 들면 아래와 같이 reactProp 를 전달합니다. 
+
+    ```jsx harmony
+    <Element reactProp={'1'} />
+    ```
+
+    이 `reactProp` 이름은 props object 를 이용하여서 접근 가능합니다. 
+    
+    ```
+    props.reactProp
+    ```
+    
+10. ### state 와 props 의 차이점은 무엇인가요? 
+
+     *props* and *state*  는 모두 Javacript Object 입니다. 둘 다 정보를 가지고 있고 Render 에 관여한다는 점은 동일하지만 Component 에 작용하는 기능적인 부분은 다릅니다. Props 는 함수를 호출할      때 파라메터와 같은 역활을 한다면, state 는 그 함수 내부에 있는 변수들의 역할을 하고 있습니다. 
+
+
+
+  
 
