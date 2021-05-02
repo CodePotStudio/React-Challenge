@@ -64,7 +64,7 @@
         }
     }, [password, onfocus, dataCheck, passwordData]);
  ```
- - 위의 코드는 children컴포넌트에 위치하며 passwordData함수가 상위컴포넌트로 비밀번호를 전달하기위해 Props로 받은 함수입니다.
+ - 위의 코드는 children컴포넌트에 위치하며 passwordData함수는 상위컴포넌트로 비밀번호를 전달하기위해 Props로 받은 함수입니다.
  - deps에 passwordData함수를 입력해 놓으면 Rerendering이 무한반복되는 현상이 있었습니다.
  - 무한반복 현상에 대한 현상은 다음과 같았습니다.
  1. 자식 컴포넌트에서 passwordData 함수가 생성되고 실행됨.
