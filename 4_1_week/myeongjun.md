@@ -77,7 +77,6 @@
  - 데이터가 바뀌지 않는데 왜 상태가 갱신되는지에 대한 의문은 아래의 링크를 참고하여 예측했으며, 부모 컴포넌트를 아래의 코드와 같이 수정하였습니다.
  <br/>
  참고1 : https://stackoverflow.com/questions/62464488/how-to-use-a-prop-function-inside-of-useeffect
- <br/>
  참고2 : https://stackoverflow.com/questions/61255053/react-usecallback-with-parameter
  ```tsx
     const getPassword = useCallback((data : string, success : boolean) => {
