@@ -35,5 +35,7 @@
  - 부모컴포넌트 : 회원가입 컴포넌트
  - 자식컴포넌트 : email입력 컴포넌트, nickname입력 컴포넌트, password입력 컴포넌트, password확인 컴포넌트
  - 이슈가 있었던 부분은 password관련 컴포넌트 입니다.
-<img src="/myeongjun/pw-component.png" width="450px" height="300px" title="pw-components" alt="pw-components"></img><br/>
+<br/>
+![Alt text](/myeongjun/pw-component.png)
+<br/>
  - 위의 사진과 같이 컴포넌트를 구성하였습니다.
