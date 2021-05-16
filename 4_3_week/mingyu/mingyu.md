@@ -54,10 +54,24 @@ module.exports = {
 
 ## memory leak
 
-`next/image`에서 memory leak 문제가 지속적으로 제기 되었다. https://github.com/vercel/next.js/issues/20915
-v9에서 v10으로 변경한 후 memory 사용량이 비정상적으로 높아졌으며 이로 인해 `next/image`의 image component를 제거했다는 말이 계속 나오게 되었다.
+`next/image`에서 memory leak 문제가 지속적으로 제기 되었습니다. https://github.com/vercel/next.js/issues/20915
+v9에서 v10으로 변경한 후 memory 사용량이 비정상적으로 높아졌으며 이로 인해 `next/image`의 image component를 제거해야만 했다 라는 말이 계속 나왔습니다.
 ![img](https://camo.githubusercontent.com/d88fbdef185b40d56b3a42a699550a469dbaa28f0ca50e2e344644900b972691/68747470733a2f2f692e696d6775722e636f6d2f434b54457863722e706e67)
 ![img](https://user-images.githubusercontent.com/13972013/104264344-72379580-5459-11eb-8285-7bb2a50adfa5.png)
 ![img](https://user-images.githubusercontent.com/6556627/105622606-adc25000-5dc7-11eb-8d65-130845bbbbd8.jpeg)
 
-이 문제는 `next/image` 내부적으로 사용하고 있는 [lovell/sharp](https://github.com/lovell/sharp/issues/1803) 라이브러리의 문제인 걸로 파악되었으나 아직 문제가 해결되지는 않은 상태이다.
+이 문제는 `next/image` 내부적으로 사용하고 있는 [lovell/sharp](https://github.com/lovell/sharp/issues/1803) 라이브러리의 문제인 걸로 파악되었으나 아직 문제가 해결되지는 않은 상태입니다.
+
+이 문제를 알게된 이유도 현재 next 서버를 돌리고 있는 ecs(Amazon Elastic Container Services)의 cpu와 memory의 사용량이 비정상적인 경우가 존재하였고, image가 pending 상태로 제대로 받아지지 않고 ecs가 비정상적으로 종료되는 문제가 계속 발생했기 때문입니다.
+
+다음은 `next/image`를 사용했다가 제거한 후의 cpu, memory 사용량입니다. 5/11 15:30 에 제거한 후 배포를 했는데 확연한 차이를 확인할 수 있습니다.
+![img](./cpu.png)![img](./memory.png)
+
+## 마무리
+현재 next.js의 stable version은 v10.2.0 입니다. canary 버전에서 버그가 수정되었다고는 하지만 실제로 이 버전을 다운받아 실행해본 결과 문제가 해결되지 않았었습니다..ㅠㅠ. v10에서 많은 좋은 기능들이 추가되었긴 하지만 memory 관련 이슈가 해결되기 전까지는 `next/image`를 사용하는 걸 지양해야할 것 같습니다.
+
+### v10.2.1-canary.3(https://github.com/vercel/next.js/releases/tag/v10.2.1-canary.3)
+@timneutkens timneutkens released this 9 days ago
+
+Core Changes
+- fix memory leak in require.cache: [#24282](https://github.com/vercel/next.js/pull/24282)
