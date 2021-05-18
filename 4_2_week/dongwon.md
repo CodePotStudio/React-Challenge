@@ -31,7 +31,7 @@ export default DetailPage;
 2. `pathname`과 `window` 객체
    `location`의 `pathname`을 이용해 페이지 이동이 감지가 되면 `window`객체의 `scrollTo` 속성을 `(0,0)`으로 설정해 페이지를 맨 위로 이동시킵니다.
 
-## 특정 페이지에 컴포넌트 렌더링 하기
+## 공통 컴포넌트 특정 페이지에서 제거하기
 
 `header`나 `navbar`와 같이 모든 페이지에 있어야 하는 컴포넌트가 특정 페이지 (로그인, 회원가입)에는 보여지지 않아야 할 때도 있습니다.
 `props`를 이용해 `isVisible`값과 같은 변수를 이용해 처리할 수 도 있지만, `react-rotuer`를 이용해서 처리해봤습니다.
